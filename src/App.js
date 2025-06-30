@@ -15,7 +15,8 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-black text-[#00ff00]">
-      {introComplete ? <Dashboard /> : <IntroScreen />}
+      {introComplete ? <Dashboard /> : <IntroScreen onFinish={() => setIntroComplete(true)} />
+}
     </div>
   );
 };
