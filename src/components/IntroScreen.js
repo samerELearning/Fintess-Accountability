@@ -29,12 +29,11 @@ const IntroScreen = ({ onFinish }) => {
   }, [play, onFinish]);
 
   return (
-    <div className="w-full h-screen flex items-center justify-center">
-      <h1 className="text-2xl sm:text-4xl font-mono tracking-wide animate-pulse">
-        {text}
-      </h1>
-    </div>
-  );
+  <div className="typewriter-screen">
+    <h1>{text}</h1>
+  </div>
+);
+
 };
 
 export default IntroScreen;
