@@ -12,7 +12,8 @@ const getGreeting = () => {
 const IntroScreen = ({ onFinish }) => {
   const [text, setText] = useState('');
   const [started, setStarted] = useState(false);
-  const [play] = useSound(typingSound, { volume: 0.5 });
+  const [, { sound }] = useSound(typingSound, { volume: 0.5 });
+
 
   useEffect(() => {
     if (!started) return;
@@ -21,19 +22,30 @@ const IntroScreen = ({ onFinish }) => {
     let index = 0;
 
     const interval = setInterval(() => {
-      const char = greetingMessage[index];
-      if (char !== undefined) {
+        const char = greetingMessage[index];
+        if (char !== undefined) {
         setText((prev) => prev + char);
-        play();
-        index++;
-      } else {
-        clearInterval(interval);
-        setTimeout(() => onFinish(), 1000);
-      }
-    }, 100);
 
-    return () => clearInterval(interval);
-  }, [started, play, onFinish]);
+        if (index % 2 === 0) {
+            sound?.stop(); // Stop any currently playing sound
+            sound?.play();
+        }
+
+        index++;
+        } else {
+        clearInterval(interval);
+        sound?.stop(); // Stop lingering sound
+        setTimeout(() => onFinish(), 1000);
+        }
+    }, 120);
+
+    return () => {
+        clearInterval(interval);
+        sound?.stop();
+    };
+}, [started, sound, onFinish]);
+
+
 
   return (
     <div className="typewriter-screen flex-col">
