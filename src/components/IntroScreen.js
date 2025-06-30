@@ -30,7 +30,8 @@ const IntroScreen = ({ onFinish }) => {
 
   return (
   <div className="typewriter-screen">
-    <h1>{text}</h1>
+    <h1>{text}<span className="cursor">█</span></h1>
+
   </div>
 );
 
