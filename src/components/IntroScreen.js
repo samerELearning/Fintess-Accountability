@@ -14,19 +14,26 @@ const IntroScreen = ({ onFinish }) => {
   const [play] = useSound(typingSound, { volume: 0.5 });
 
   useEffect(() => {
-    const greeting = getGreeting();
+    const greetingMessage = getGreeting();
+    if (!greetingMessage) return;
+
     let index = 0;
     const interval = setInterval(() => {
-      setText((prev) => prev + greeting[index]);
-      play();
-      index++;
-      if (index >= greeting.length) {
+        const char = greetingMessage[index];
+        if (char !== undefined) {
+        setText((prev) => prev + char);
+        play();
+        index++;
+        } else {
         clearInterval(interval);
-        setTimeout(() => onFinish(), 1000); // Optional pause after typing
-      }
+        setTimeout(() => onFinish(), 1000);
+        }
     }, 100);
+
     return () => clearInterval(interval);
-  }, [play, onFinish]);
+    }, [play, onFinish]);
+
+
 
   return (
   <div className="typewriter-screen">
