@@ -24,20 +24,19 @@ const IntroScreen = ({ onFinish }) => {
     const interval = setInterval(() => {
         const char = greetingMessage[index];
         if (char !== undefined) {
-        setText((prev) => prev + char);
+            setText((prev) => prev + char);
 
-        if (index % 2 === 0) {
-            sound?.stop(); // Stop any currently playing sound
+        if (index % 2 === 0 && char !== ' ') {
+            sound?.stop();
             sound?.play();
         }
-
         index++;
         } else {
         clearInterval(interval);
         sound?.stop(); // Stop lingering sound
         setTimeout(() => onFinish(), 1000);
         }
-    }, 120);
+    }, 80);
 
     return () => {
         clearInterval(interval);
