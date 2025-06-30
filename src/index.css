@@ -13,6 +13,7 @@ code {
 }
 
 .typewriter-screen {
+  font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
   background-color: black;
   color: #00ff00;
   font-family: 'Share Tech Mono', monospace;
@@ -20,7 +21,8 @@ code {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 2.5rem;
+  font-size: calc(1rem + 0.5vw);
+
 }
 
 .cursor {
