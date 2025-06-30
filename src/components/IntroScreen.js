@@ -39,7 +39,7 @@ const IntroScreen = ({ onFinish }) => {
     <div className="typewriter-screen flex-col">
       {!started ? (
         <button
-          className="text-[#00ff00] border border-[#00ff00] px-6 py-3 font-mono text-lg hover:bg-[#00ff00] hover:text-black transition-all"
+          className="mission-button"
           onClick={() => setStarted(true)}
         >
           Begin Mission

@@ -31,6 +31,25 @@ code {
   animation: blink 1s step-end infinite;
 }
 
+.mission-button {
+  color: #00ff00;
+  border: 2px solid #00ff00;
+  padding: 0.75rem 2rem;
+  background: transparent;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 1.2rem;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+}
+
+.mission-button:hover {
+  background-color: #00ff00;
+  color: black;
+  box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+}
+
 @keyframes blink {
   50% { opacity: 0; }
 }
