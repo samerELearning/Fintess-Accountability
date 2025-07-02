@@ -31,7 +31,7 @@ const IntroScreen = ({ onFinish }) => {
   const [, { sound }] = useSound(typingSound, { volume: 0.5 });
 
   // Omly for Kareem //////////////////////////////////////////////////
-const specialUserId = 'Xh1wE0w9EtQlUaUEOSEjXSNqyps1';
+const specialUserId = 'AuLUaLwwzAe3rAoMa4tjfPjpBHe2';
 const [authReady, setAuthReady] = useState(false);
 const [isSpecialUser, setIsSpecialUser] = useState(false);
 const auth = getAuth();
