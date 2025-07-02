@@ -60,8 +60,8 @@ const IntroScreen = ({ onFinish }) => {
       if (user) {
         setUserId(user.uid);
         const nameDoc = await getDoc(doc(db, 'user_names', user.uid));
-        if (nameDoc.exists()) {
-          // Name exists — skip to finish
+        if (false) {
+          // Name exists — skip to finish  nameDoc.exists()
           runTyping(getGreeting(), () => setTimeout(() => onFinish(), 1000));
         } else {
           // Name doesn't exist — ask for it
@@ -104,17 +104,19 @@ const handleNameSubmit = async (e) => {
         <h1>{text}<span className="cursor">█</span></h1>
         {showInput && (
           <form onSubmit={handleNameSubmit}>
-            <input
-              type="text"
-              placeholder="Enter your name"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="name-input"
-              autoFocus
-            />
-            <button type="submit" className="mission-button" style={{ marginTop: '1rem' }}>
-              Proceed
-            </button>
+            <div className="name-form">
+              <input
+                type="text"
+                placeholder="Enter your name"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="name-input"
+                autoFocus
+              />
+              <button type="submit" className="mission-button" style={{ marginTop: '1rem' }}>
+                Proceed
+              </button>
+            </div>
           </form>
         )}
       </>
