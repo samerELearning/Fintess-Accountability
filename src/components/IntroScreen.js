@@ -150,7 +150,7 @@ return (
                 className="name-input"
                 autoFocus
               />
-              <button type="submit" className="mission-button" style={{ marginTop: '1rem' }}>
+              <button type="submit" className="mission-button" style={{ marginTop: '1rem' }} disabled={!name.trim()}>
                 Proceed
               </button>
             </div>
