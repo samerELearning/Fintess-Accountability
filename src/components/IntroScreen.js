@@ -30,6 +30,26 @@ const IntroScreen = ({ onFinish }) => {
   const [started, setStarted] = useState(false);
   const [, { sound }] = useSound(typingSound, { volume: 0.5 });
 
+  // Omly for Kareem //////////////////////////////////////////////////
+const specialUserId = 'Xh1wE0w9EtQlUaUEOSEjXSNqyps1';
+const [authReady, setAuthReady] = useState(false);
+const [isSpecialUser, setIsSpecialUser] = useState(false);
+const auth = getAuth();
+
+useEffect(() => {
+  const unsubscribe = auth.onAuthStateChanged((user) => {
+    if (user) {
+      setUserId(user.uid);
+      setAuthReady(true);
+      if (user.uid === specialUserId) {
+        setIsSpecialUser(true);
+      }
+    }
+  });
+  return () => unsubscribe();
+}, []);
+
+// Only for Kareem //////////////////////////////////////////////////
 
   useEffect(() => {
   if (!started) return;
@@ -91,9 +111,24 @@ const handleNameSubmit = async (e) => {
     onFinish();
   }
 };
-
-
+// Omly for Kareem //////////////////////////////////////////////////
+if (isSpecialUser) {
   return (
+    <div className="typewriter-screen">
+      <video
+        src="/joke.mp4"
+        width="720"
+        height="400"
+        autoPlay
+        controls
+        style={{ border: '2px solid #00ff00', boxShadow: '0 0 10px #00ff00' }}
+      />
+    </div>
+  );
+}
+// Only for Kareem //////////////////////////////////////////////////
+  
+return (
   <div className="typewriter-screen flex-col">
     {!started ? (
       <button className="mission-button" onClick={() => setStarted(true)}>
