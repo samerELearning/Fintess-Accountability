@@ -48,6 +48,8 @@ const Dashboard = () => {
   const [actualDistance, setActualDistance] = useState('');
   const [message, setMessage] = useState('');
   const [weeklyEntries, setWeeklyEntries] = useState([]);
+ 
+
 
   useEffect(() => {
     signInAnonymously(auth).catch((error) => {
@@ -104,8 +106,7 @@ const Dashboard = () => {
   return (
     <div className="dashboard-screen">
       <h1 className="dashboard-title">WEEKLY FITNESS DASHBOARD</h1>
-      {message && <p className="dashboard-message">{message}</p>}
-
+      
       <form className="dashboard-form" onSubmit={handleSubmit}>
         <input
           type="number"
