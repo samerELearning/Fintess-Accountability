@@ -4,10 +4,17 @@ import typingSound from '../assets/typewriter.mp3';
 
 const getGreeting = () => {
   const hour = new Date().getHours();
-  if (hour < 12) return 'Good morning, fellas.';
-  if (hour < 18) return 'Good afternoon, fellas.';
-  return 'Good evening, fellas.';
+  if (hour >= 4 && hour < 12) {
+    return "goodmorning soldier!";
+  } else if (hour >= 12 && hour < 17) {
+    return "good afternoon soldier!";
+  } else if (hour >= 17 || hour < 1) {
+    return "good evening soldier!";
+  } else if (hour >= 1 && hour < 4) {
+    return "who needs sleep when you're training for greatness?";
+  }
 };
+
 
 const IntroScreen = ({ onFinish }) => {
   const [text, setText] = useState('');
