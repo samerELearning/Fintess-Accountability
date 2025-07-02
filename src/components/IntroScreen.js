@@ -121,7 +121,9 @@ if (isSpecialUser) {
         height="400"
         autoPlay
         controls
+        controlsList="nodownload"
         style={{ border: '2px solid #00ff00', boxShadow: '0 0 10px #00ff00' }}
+        onContextMenu={(e) => e.preventDefault()}
       />
     </div>
   );
