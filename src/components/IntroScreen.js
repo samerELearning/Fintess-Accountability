@@ -64,24 +64,38 @@ useEffect(() => {
 // Only for Kareem //////////////////////////////////////////////////
 
 const runTyping = async (message, onDone) => {
-    let index = 0;
-    setText('');
-    const interval = setInterval(() => {
-      const char = message[index];
-      if (char !== undefined) {
-        setText((prev) => prev + char);
-        if (index % 2 === 0 && char !== ' ') {
-          sound?.stop();
-          sound?.play();
-        }
-        index++;
-      } else {
-        clearInterval(interval);
+  let index = 0;
+  setText('');
+
+  const typeNextChar = () => {
+    const char = message[index];
+    if (char !== undefined) {
+      setText((prev) => prev + char);
+
+      let delay = 80;
+      if (char === '.') {
+        delay = 500;
+        sound?.stop(); // stop sound for full pause
+      } else if (char === ',') {
+        delay = 200;
+        sound?.stop(); // stop sound for comma pause
+      } else if (index % 2 === 0 && char !== ' ') {
         sound?.stop();
-        onDone?.();
+        sound?.play();
       }
-    }, 80);
+
+      index++;
+      setTimeout(typeNextChar, delay);
+    } else {
+      sound?.stop();
+      onDone?.();
+    }
   };
+
+  typeNextChar();
+};
+
+
 
   useEffect(() => {
   if (!started) return;
