@@ -122,9 +122,11 @@ body {
 }
 
 .dashboard-form {
-  display: flex;
-  gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem 2rem;
   margin-bottom: 2rem;
+  justify-items: center;
 }
 
 .dashboard-form input {
@@ -145,6 +147,8 @@ body {
   font-weight: bold;
   cursor: pointer;
   transition: background 0.2s ease-in-out;
+  grid-column: 1 / -1; /* Span all columns */
+  justify-self: center;
 }
 
 .dashboard-form button:hover {
