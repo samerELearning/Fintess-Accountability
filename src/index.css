@@ -185,6 +185,14 @@ body {
   text-align: center;
 }
 
+.dashboard-section-title {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+  text-align: center;
+  color: #00ff00;
+}
+
 .name-input {
   padding: 0.6rem 1rem;
   background-color: black;

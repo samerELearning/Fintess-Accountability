@@ -152,7 +152,7 @@ const Dashboard = () => {
         </button>
 
       </form>
-
+      <h2 className="dashboard-section-title">Your Weekly History</h2>
       <table className="dashboard-table">
         <thead>
           <tr>
