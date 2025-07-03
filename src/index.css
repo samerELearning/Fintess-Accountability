@@ -157,6 +157,21 @@ body {
   box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
 }
 
+.dashboard-form button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  box-shadow: none;
+  border-color: #00ff00;
+  color: #00ff00;
+}
+
+.dashboard-form button:disabled:hover {
+  background: transparent;
+  color: #00ff00;
+  box-shadow: none;
+}
+
+
 .dashboard-table {
   width: 100%;
   max-width: 800px;

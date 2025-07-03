@@ -107,9 +107,9 @@ const Dashboard = () => {
     setActualReps('');
   };
 
-  const calculateResult = useCallback((goal, actual) => {
+  const calculateResult = useCallback((goal, actual, unit = 'km') => {
     const diff = actual - goal;
-    return diff >= 0 ? `+${diff.toFixed(2)} km` : `${diff.toFixed(2)} km`;
+    return diff >= 0 ? `+${diff.toFixed(2)} ${unit}` : `${diff.toFixed(2)} ${unit}`;
   }, []);
 
   return (
@@ -146,7 +146,11 @@ const Dashboard = () => {
           required
         />
 
-        <button type="submit">SUBMIT</button>
+        <button type="submit" disabled={
+                !goalDistance || !actualDistance || !goalReps || !actualReps}>
+                SUBMIT
+        </button>
+
       </form>
 
       <table className="dashboard-table">
@@ -168,7 +172,16 @@ const Dashboard = () => {
               <td>{entry.actualDistance.toFixed(1)}</td>
               <td>{entry.goalReps ?? '-'}</td>
               <td>{entry.actualReps ?? '-'}</td>
-              <td>{calculateResult(entry.goalDistance, entry.actualDistance)}</td>
+              <td>
+                <div>
+                  <div>
+                    {calculateResult(entry.goalDistance, entry.actualDistance, 'km')}
+                  </div>
+                  <div>
+                    {calculateResult(entry.goalReps, entry.actualReps, 'reps')}
+                  </div>
+                </div>
+              </td>
             </tr>
           ))}
         </tbody>
