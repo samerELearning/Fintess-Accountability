@@ -36,6 +36,10 @@ const getGreeting = (name) => {
   const [userId, setUserId] = useState(null);
   const [showDescription, setShowDescription] = useState(false);
   const [showProceedButton, setShowProceedButton] = useState(false);
+  const [nameSubmitted, setNameSubmitted] = useState(false);
+
+
+
 
 
 
@@ -108,7 +112,6 @@ const runTyping = async (message, onDone) => {
         const nameDoc = await getDoc(doc(db, 'user_names', user.uid));
         if (false) {
           // Name exists — skip to finish  nameDoc.exists()
-          //runTyping(getGreeting(), () => setTimeout(() => onFinish(), 1000));
           const greeting = nameDoc.exists()
             ? getGreeting(nameDoc.data().name)
             : getGreeting();
@@ -193,7 +196,13 @@ return (
         <h1>{text}<span className="cursor">█</span></h1>
 
         {showInput && (
-          <form onSubmit={handleNameSubmit}>
+          <form onSubmit={(e) => {
+                e.preventDefault();
+                if (!nameSubmitted) {
+                  setNameSubmitted(true);
+                  handleNameSubmit(e);
+                }
+              }}>
             <div className="name-form">
               <input
                 type="text"
