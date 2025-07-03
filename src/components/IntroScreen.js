@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import useSound from 'use-sound';
 import typingSound from '../assets/typewriter.mp3';
 import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
+import { getAuth, signInAnonymously } from 'firebase/auth';
 
 
 const getGreeting = (name) => {
@@ -72,83 +72,41 @@ const runTyping = async (message, onDone) => {
   typeNextChar();
 };
 
-
-
-  /*useEffect(() => {
+useEffect(() => {
   if (!started) return;
 
-  const checkNameAndRun = async () => {
-    const auth = getAuth();
-    const unsubscribe = auth.onAuthStateChanged(async (user) => {
-      if (user) {
-        setUserId(user.uid);
-        const nameDoc = await getDoc(doc(db, 'user_names', user.uid));
-        if (nameDoc.exists()) {
-          // Name exists — skip to finish  nameDoc.exists()
-          const greeting = nameDoc.exists()
-            ? getGreeting(nameDoc.data().name)
-            : getGreeting();
+  const auth = getAuth();
 
-          runTyping(greeting, () => {
-            if (nameDoc.exists()) {
-              setTimeout(() => onFinish(), 1000);
-            } else {
+  signInAnonymously(auth)
+    .then(() => {
+      const unsubscribe = auth.onAuthStateChanged(async (user) => {
+        if (user) {
+          setUserId(user.uid);
+
+          const nameDoc = await getDoc(doc(db, 'user_names', user.uid));
+          if (false) {//nameDoc.exists()
+            const greeting = getGreeting(nameDoc.data().name);
+            runTyping(greeting, () => setTimeout(() => onFinish(), 1000));
+          } else {
+            runTyping(getGreeting(), () => {
               setTimeout(() => {
                 setPhase('askName');
                 runTyping('State your name', () => {
                   setShowInput(true);
                 });
               }, 1000);
-            }
-          });
-
-        } else {
-          // Name doesn't exist — ask for it
-          runTyping(getGreeting(), () => {
-            setTimeout(() => {
-              setPhase('askName');
-              runTyping('State your name', () => {
-                setShowInput(true);
-              });
-            }, 1000);
-          });
-        }
-      }
-    });
-
-    return () => unsubscribe();
-  };
-
-  checkNameAndRun();
-}, [started, sound, onFinish, db]);*/
-
-useEffect(() => {
-  if (!started) return;
-
-  const auth = getAuth();
-  const unsubscribe = auth.onAuthStateChanged(async (user) => {
-    if (user) {
-      setUserId(user.uid);
-
-      const nameDoc = await getDoc(doc(db, 'user_names', user.uid));
-      if (false) {//nameDoc.exists()
-        const greeting = getGreeting(nameDoc.data().name);
-        runTyping(greeting, () => setTimeout(() => onFinish(), 1000));
-      } else {
-        runTyping(getGreeting(), () => {
-          setTimeout(() => {
-            setPhase('askName');
-            runTyping('State your name', () => {
-              setShowInput(true);
             });
-          }, 1000);
-        });
-      }
-    }
-  });
+          }
+        }
+      });
 
-  return () => unsubscribe();
+      return unsubscribe;
+    })
+    .catch((error) => {
+      console.error("Anonymous sign-in error:", error);
+    });
 }, [started, db, onFinish]);
+
 
 
 
