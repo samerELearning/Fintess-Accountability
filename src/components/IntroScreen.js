@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import useSound from 'use-sound';
 import typingSound from '../assets/typewriter.mp3';
-import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
+import { getFirestore, doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 
@@ -46,27 +46,6 @@ const getGreeting = (name) => {
   const [started, setStarted] = useState(false);
   const [, { sound }] = useSound(typingSound, { volume: 0.5 });
 
-  // Omly for Kareem //////////////////////////////////////////////////
-const specialUserId = 'AuLUaLwwzAe3rAoMa4tjfPjpBHe2';
-const [authReady, setAuthReady] = useState(false);
-const [isSpecialUser, setIsSpecialUser] = useState(false);
-const auth = getAuth();
-
-useEffect(() => {
-  const unsubscribe = auth.onAuthStateChanged((user) => {
-    if (user) {
-      setUserId(user.uid);
-      setAuthReady(true);
-      if (user.uid === specialUserId) {
-        setIsSpecialUser(true);
-      }
-    }
-  });
-  return () => unsubscribe();
-}, []);
-
-// Only for Kareem //////////////////////////////////////////////////
-
 const runTyping = async (message, onDone) => {
   let index = 0;
   setText('');
@@ -101,7 +80,7 @@ const runTyping = async (message, onDone) => {
 
 
 
-  useEffect(() => {
+  /*useEffect(() => {
   if (!started) return;
 
   const checkNameAndRun = async () => {
@@ -110,7 +89,7 @@ const runTyping = async (message, onDone) => {
       if (user) {
         setUserId(user.uid);
         const nameDoc = await getDoc(doc(db, 'user_names', user.uid));
-        if (false) {
+        if (nameDoc.exists()) {
           // Name exists — skip to finish  nameDoc.exists()
           const greeting = nameDoc.exists()
             ? getGreeting(nameDoc.data().name)
@@ -147,13 +126,54 @@ const runTyping = async (message, onDone) => {
   };
 
   checkNameAndRun();
-}, [started, sound, onFinish, db]);
+}, [started, sound, onFinish, db]);*/
+
+useEffect(() => {
+  if (!started) return;
+
+  const auth = getAuth();
+  const unsubscribe = auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      setUserId(user.uid);
+
+      const nameDoc = await getDoc(doc(db, 'user_names', user.uid));
+      if (false) {//nameDoc.exists()
+        const greeting = getGreeting(nameDoc.data().name);
+        runTyping(greeting, () => setTimeout(() => onFinish(), 1000));
+      } else {
+        runTyping(getGreeting(), () => {
+          setTimeout(() => {
+            setPhase('askName');
+            runTyping('State your name', () => {
+              setShowInput(true);
+            });
+          }, 1000);
+        });
+      }
+    }
+  });
+
+  return () => unsubscribe();
+}, [started, db, onFinish]);
+
+
+
 
 
 const handleNameSubmit = async (e) => {
   e.preventDefault();
   if (userId && name.trim()) {
-    await setDoc(doc(db, 'user_names', userId), { name: name.trim() });
+    //await setDoc(doc(db, 'user_names', userId), { name: name.trim() });
+    const userRef = doc(db, 'user_names', userId);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+      await setDoc(userRef, {
+        name: name.trim(),
+        joinedAt: serverTimestamp(),
+      });
+    }
+
     setPhase('description');
     setShowInput(false); // hide the input
     runTyping(
@@ -164,26 +184,6 @@ const handleNameSubmit = async (e) => {
     );
   }
 };
-
-
-// Omly for Kareem //////////////////////////////////////////////////
-if (isSpecialUser) {
-  return (
-    <div className="typewriter-screen">
-      <video
-        src="/joke.mp4"
-        width="720"
-        height="400"
-        autoPlay
-        controls
-        controlsList="nodownload"
-        style={{ border: '2px solid #00ff00', boxShadow: '0 0 10px #00ff00' }}
-        onContextMenu={(e) => e.preventDefault()}
-      />
-    </div>
-  );
-}
-// Only for Kareem //////////////////////////////////////////////////
   
 return (
   <div className="typewriter-screen flex-col">
