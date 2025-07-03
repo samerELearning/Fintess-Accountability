@@ -37,12 +37,6 @@ const getGreeting = (name) => {
   const [showDescription, setShowDescription] = useState(false);
   const [showProceedButton, setShowProceedButton] = useState(false);
   const [nameSubmitted, setNameSubmitted] = useState(false);
-
-
-
-
-
-
   const [started, setStarted] = useState(false);
   const [, { sound }] = useSound(typingSound, { volume: 0.5 });
 
@@ -137,7 +131,7 @@ useEffect(() => {
       setUserId(user.uid);
 
       const nameDoc = await getDoc(doc(db, 'user_names', user.uid));
-      if (nameDoc.exists()) {//nameDoc.exists()
+      if (false) {//nameDoc.exists()
         const greeting = getGreeting(nameDoc.data().name);
         runTyping(greeting, () => setTimeout(() => onFinish(), 1000));
       } else {
