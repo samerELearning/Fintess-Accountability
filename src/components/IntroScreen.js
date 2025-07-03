@@ -5,21 +5,29 @@ import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
 
 
-const getGreeting = () => {
+const getGreeting = (name) => {
   const hour = new Date().getHours();
-  if (hour >= 4 && hour < 12) {
-    return "goodmorning soldier!";
-  } else if (hour >= 12 && hour < 17) {
-    return "good afternoon soldier!";
-  } else if (hour >= 17 || hour < 1) {
-    return "good evening soldier!";
-  } else if (hour >= 1 && hour < 4) {
-    return "who needs sleep when you're training for greatness?";
+  const baseGreeting =
+    hour >= 4 && hour < 12
+      ? "goodmorning"
+      : hour >= 12 && hour < 17
+      ? "good afternoon"
+      : hour >= 17 || hour < 1
+      ? "good evening"
+      : "who needs sleep when you're training for greatness?";
+
+  if (baseGreeting === "who needs sleep when you're training for greatness?") {
+    return baseGreeting;
   }
+
+  // Append the name if available, otherwise default to "soldier"
+  return `${baseGreeting} ${name || "soldier"}!`;
 };
 
 
-const IntroScreen = ({ onFinish }) => {
+
+
+  const IntroScreen = ({ onFinish }) => {
   const [text, setText] = useState('');
   const [phase, setPhase] = useState('greeting');
   const [name, setName] = useState('');
@@ -82,7 +90,24 @@ useEffect(() => {
         const nameDoc = await getDoc(doc(db, 'user_names', user.uid));
         if (false) {
           // Name exists — skip to finish  nameDoc.exists()
-          runTyping(getGreeting(), () => setTimeout(() => onFinish(), 1000));
+          //runTyping(getGreeting(), () => setTimeout(() => onFinish(), 1000));
+          const greeting = nameDoc.exists()
+            ? getGreeting(nameDoc.data().name)
+            : getGreeting();
+
+          runTyping(greeting, () => {
+            if (nameDoc.exists()) {
+              setTimeout(() => onFinish(), 1000);
+            } else {
+              setTimeout(() => {
+                setPhase('askName');
+                runTyping('State your name', () => {
+                  setShowInput(true);
+                });
+              }, 1000);
+            }
+          });
+
         } else {
           // Name doesn't exist — ask for it
           runTyping(getGreeting(), () => {
