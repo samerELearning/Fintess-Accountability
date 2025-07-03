@@ -137,7 +137,7 @@ useEffect(() => {
       setUserId(user.uid);
 
       const nameDoc = await getDoc(doc(db, 'user_names', user.uid));
-      if (false) {//nameDoc.exists()
+      if (nameDoc.exists()) {//nameDoc.exists()
         const greeting = getGreeting(nameDoc.data().name);
         runTyping(greeting, () => setTimeout(() => onFinish(), 1000));
       } else {
