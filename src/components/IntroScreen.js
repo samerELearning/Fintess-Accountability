@@ -34,6 +34,10 @@ const getGreeting = (name) => {
   const [showInput, setShowInput] = useState(false);
   const [db] = useState(getFirestore());
   const [userId, setUserId] = useState(null);
+  const [showDescription, setShowDescription] = useState(false);
+  const [showProceedButton, setShowProceedButton] = useState(false);
+
+
 
   const [started, setStarted] = useState(false);
   const [, { sound }] = useSound(typingSound, { volume: 0.5 });
@@ -59,10 +63,7 @@ useEffect(() => {
 
 // Only for Kareem //////////////////////////////////////////////////
 
-  useEffect(() => {
-  if (!started) return;
-
-  const runTyping = async (message, onDone) => {
+const runTyping = async (message, onDone) => {
     let index = 0;
     setText('');
     const interval = setInterval(() => {
@@ -81,6 +82,9 @@ useEffect(() => {
       }
     }, 80);
   };
+
+  useEffect(() => {
+  if (!started) return;
 
   const checkNameAndRun = async () => {
     const auth = getAuth();
@@ -133,9 +137,18 @@ const handleNameSubmit = async (e) => {
   e.preventDefault();
   if (userId && name.trim()) {
     await setDoc(doc(db, 'user_names', userId), { name: name.trim() });
-    onFinish();
+    setPhase('description');
+    setShowInput(false); // hide the input
+    runTyping(
+      `Welcome ${name.trim()}. This is your fitness accountability dashboard. Every week, you set your goal and log your actual progress. If you fall behind, your team feels it. Stay sharp.`,
+      () => {
+        setShowProceedButton(true);
+      }
+    );
   }
 };
+
+
 // Omly for Kareem //////////////////////////////////////////////////
 if (isSpecialUser) {
   return (
@@ -164,6 +177,7 @@ return (
     ) : (
       <>
         <h1>{text}<span className="cursor">█</span></h1>
+
         {showInput && (
           <form onSubmit={handleNameSubmit}>
             <div className="name-form">
@@ -175,16 +189,31 @@ return (
                 className="name-input"
                 autoFocus
               />
-              <button type="submit" className="mission-button" style={{ marginTop: '1rem' }} disabled={!name.trim()}>
+              <button
+                type="submit"
+                className="mission-button"
+                style={{ marginTop: '1rem' }}
+              >
                 Proceed
               </button>
             </div>
           </form>
         )}
+
+        {phase === 'description' && showProceedButton && (
+          <button
+            className="mission-button"
+            style={{ marginTop: '2rem' }}
+            onClick={onFinish}
+          >
+            Proceed
+          </button>
+        )}
       </>
     )}
   </div>
 );
+
 
 };
 
