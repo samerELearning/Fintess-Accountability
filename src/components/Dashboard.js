@@ -46,6 +46,8 @@ const Dashboard = () => {
   const [userId, setUserId] = useState(null);
   const [goalDistance, setGoalDistance] = useState('');
   const [actualDistance, setActualDistance] = useState('');
+  const [goalReps, setGoalReps] = useState('');
+  const [actualReps, setActualReps] = useState('');
   const [message, setMessage] = useState('');
   const [weeklyEntries, setWeeklyEntries] = useState([]);
  
@@ -77,13 +79,18 @@ const Dashboard = () => {
     e.preventDefault();
     const goal = parseFloat(goalDistance);
     const actual = parseFloat(actualDistance);
-    if (isNaN(goal) || isNaN(actual)) return;
+    const repsGoal = parseInt(goalReps);
+    const repsActual = parseInt(actualReps);
+
+    if (isNaN(goal) || isNaN(actual) || isNaN(repsGoal) || isNaN(repsActual)) return;
 
     const weekId = getWeekId(new Date());
     const entry = {
       weekId,
       goalDistance: goal,
       actualDistance: actual,
+      goalReps: repsGoal,
+      actualReps: repsActual,
       timestamp: serverTimestamp(),
     };
 
@@ -96,6 +103,8 @@ const Dashboard = () => {
     setMessage('Entry saved successfully!');
     setGoalDistance('');
     setActualDistance('');
+    setGoalReps('');
+    setActualReps('');
   };
 
   const calculateResult = useCallback((goal, actual) => {
@@ -122,6 +131,21 @@ const Dashboard = () => {
           onChange={(e) => setActualDistance(e.target.value)}
           required
         />
+        <input
+          type="number"
+          placeholder="Goal Reps"
+          value={goalReps}
+          onChange={(e) => setGoalReps(e.target.value)}
+          required
+        />
+        <input
+          type="number"
+          placeholder="Actual Reps"
+          value={actualReps}
+          onChange={(e) => setActualReps(e.target.value)}
+          required
+        />
+
         <button type="submit">SUBMIT</button>
       </form>
 
@@ -131,6 +155,8 @@ const Dashboard = () => {
             <th>Week</th>
             <th>Goal (km)</th>
             <th>Actual (km)</th>
+            <th>Goal Reps</th>
+            <th>Actual Reps</th>
             <th>Result</th>
           </tr>
         </thead>
@@ -140,6 +166,8 @@ const Dashboard = () => {
               <td>{entry.weekId}</td>
               <td>{entry.goalDistance.toFixed(1)}</td>
               <td>{entry.actualDistance.toFixed(1)}</td>
+              <td>{entry.goalReps ?? '-'}</td>
+              <td>{entry.actualReps ?? '-'}</td>
               <td>{calculateResult(entry.goalDistance, entry.actualDistance)}</td>
             </tr>
           ))}
