@@ -147,7 +147,11 @@ const Dashboard = () => {
       
       <form className="dashboard-form" onSubmit={(e) => {
             e.preventDefault();
-            setShowGoalConfirm(true); // show the confirmation popup
+            if (!hasSubmittedGoal) {
+              setShowGoalConfirm(true); // Only show confirmation popup for goal submission
+            } else {
+              handleSubmit(e); // Submit directly for actual inputs
+            }
           }}>
         {!hasSubmittedGoal ? (
         <>
