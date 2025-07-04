@@ -56,11 +56,9 @@ const Dashboard = () => {
   const [loading, setLoading] = useState(true);
   const isFirstTimeUser = weeklyEntries.length === 0;
   const currentWeekId = getCurrentWeekId();
+  const [hasSubmittedGoal, setHasSubmittedGoal] = useState(false);
 
-
-
- 
-
+  
 
   useEffect(() => {
     signInAnonymously(auth).catch((error) => {
@@ -82,6 +80,9 @@ const Dashboard = () => {
       const entries = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
       setWeeklyEntries(entries);
       setLoading(false); // Set loading to false once data is fetched
+
+      const currentWeekEntry = entries.find(entry => entry.weekId === currentWeekId);
+      setHasSubmittedGoal(!!currentWeekEntry?.goalDistance);
     });
 
     return () => unsubscribe();
@@ -90,40 +91,48 @@ const Dashboard = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const goal = parseFloat(goalDistance);
-    const actual = parseFloat(actualDistance);
-    const repsGoal = parseInt(goalReps);
-    const repsActual = parseInt(actualReps);
-
-    if (isNaN(goal) || isNaN(repsGoal) || (!isFirstTimeUser && (isNaN(actual) || isNaN(repsActual))))
-      return;
 
     const weekId = getWeekId(new Date());
-    const entry = {
-      weekId,
-      goalDistance: goal,
-      goalReps: repsGoal,
-      timestamp: serverTimestamp(),
-    };
 
-    if (!isFirstTimeUser) {
-      entry.actualDistance = actual;
-      entry.actualReps = repsActual;
+    if (!hasSubmittedGoal) {
+      const goal = parseFloat(goalDistance);
+      const repsGoal = parseInt(goalReps);
+      if (isNaN(goal) || isNaN(repsGoal)) return;
+
+      await setDoc(
+        doc(db, `artifacts/default-fitness-app/users/${userId}/weekly_distances`, weekId),
+        {
+          weekId,
+          goalDistance: goal,
+          goalReps: repsGoal,
+          timestamp: serverTimestamp(),
+        },
+        { merge: true }
+      );
+    } else {
+      const actual = parseFloat(actualDistance);
+      const repsActual = parseInt(actualReps);
+      if (isNaN(actual) || isNaN(repsActual)) return;
+
+      await setDoc(
+        doc(db, `artifacts/default-fitness-app/users/${userId}/weekly_distances`, weekId),
+        {
+          actualDistance: actual,
+          actualReps: repsActual,
+          timestamp: serverTimestamp(),
+        },
+        { merge: true }
+      );
     }
 
-
-    await setDoc(
-      doc(db, `artifacts/default-fitness-app/users/${userId}/weekly_distances`, weekId),
-      entry,
-      { merge: true }
-    );
-
-    setMessage('Entry saved successfully!');
+    // Reset
     setGoalDistance('');
-    setActualDistance('');
     setGoalReps('');
+    setActualDistance('');
     setActualReps('');
+    setMessage('Entry saved successfully!');
   };
+
 
   const calculateResult = useCallback((goal, actual, unit = 'km') => {
     const diff = actual - goal;
@@ -135,14 +144,25 @@ const Dashboard = () => {
       <h1 className="dashboard-title">WEEKLY FITNESS DASHBOARD</h1>
       
       <form className="dashboard-form" onSubmit={handleSubmit}>
-        <input
-          type="number"
-          placeholder="Goal Distance (km)"
-          value={goalDistance}
-          onChange={(e) => setGoalDistance(e.target.value)}
-          required
-        />
-        {!isFirstTimeUser && (
+        {!hasSubmittedGoal ? (
+        <>
+          <input
+            type="number"
+            placeholder="Goal Distance (km)"
+            value={goalDistance}
+            onChange={(e) => setGoalDistance(e.target.value)}
+            required
+          />
+          <input
+            type="number"
+            placeholder="Goal Reps"
+            value={goalReps}
+            onChange={(e) => setGoalReps(e.target.value)}
+            required
+          />
+        </>
+      ) : (
+        <>
           <input
             type="number"
             placeholder="Actual Distance (km)"
@@ -150,15 +170,6 @@ const Dashboard = () => {
             onChange={(e) => setActualDistance(e.target.value)}
             required
           />
-        )}
-        <input
-          type="number"
-          placeholder="Goal Reps"
-          value={goalReps}
-          onChange={(e) => setGoalReps(e.target.value)}
-          required
-        />
-        {!isFirstTimeUser && (
           <input
             type="number"
             placeholder="Actual Reps"
@@ -166,16 +177,19 @@ const Dashboard = () => {
             onChange={(e) => setActualReps(e.target.value)}
             required
           />
-        )}
+        </>
+      )}
+
         <button
           type="submit"
           disabled={
-            !goalDistance || !goalReps ||
-            (!isFirstTimeUser && (!actualDistance || !actualReps))
+            (!hasSubmittedGoal && (!goalDistance || !goalReps)) ||
+            (hasSubmittedGoal && (!actualDistance || !actualReps))
           }
         >
           SUBMIT
         </button>
+
       </form>
 
  {loading ? (
