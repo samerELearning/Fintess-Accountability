@@ -153,39 +153,38 @@ const Dashboard = () => {
 
       </form>
       <h2 className="dashboard-section-title">Your Weekly History</h2>
-      <table className="dashboard-table">
-        <thead>
-          <tr>
-            <th>Week</th>
-            <th>Goal (km)</th>
-            <th>Actual (km)</th>
-            <th>Goal Reps</th>
-            <th>Actual Reps</th>
-            <th>Result</th>
-          </tr>
-        </thead>
-        <tbody>
-          {weeklyEntries.map((entry) => (
-            <tr key={entry.id}>
-              <td>{entry.weekId}</td>
-              <td>{entry.goalDistance.toFixed(1)}</td>
-              <td>{entry.actualDistance.toFixed(1)}</td>
-              <td>{entry.goalReps ?? '-'}</td>
-              <td>{entry.actualReps ?? '-'}</td>
-              <td>
-                <div>
-                  <div>
-                    {calculateResult(entry.goalDistance, entry.actualDistance, 'km')}
-                  </div>
-                  <div>
-                    {calculateResult(entry.goalReps, entry.actualReps, 'reps')}
-                  </div>
-                </div>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div style={{ maxHeight: '300px', overflowY: 'auto' }}>
+  <table className="dashboard-table">
+    <thead>
+      <tr>
+        <th>Week</th>
+        <th>Goal (km)</th>
+        <th>Actual (km)</th>
+        <th>Goal Reps</th>
+        <th>Actual Reps</th>
+        <th>Result</th>
+      </tr>
+    </thead>
+    <tbody>
+      {weeklyEntries.map((entry) => (
+        <tr key={entry.id}>
+          <td>{entry.weekId}</td>
+          <td>{entry.goalDistance?.toFixed(1) ?? '-'}</td>
+          <td>{entry.actualDistance?.toFixed(1) ?? '-'}</td>
+          <td>{entry.goalReps ?? '-'}</td>
+          <td>{entry.actualReps ?? '-'}</td>
+          <td>
+            {entry.goalDistance != null && entry.actualDistance != null
+              ? calculateResult(entry.goalDistance, entry.actualDistance, 'km') + '\n' +
+                calculateResult(entry.goalReps, entry.actualReps, 'reps')
+              : 'MIA'}
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
     </div>
   );
 };

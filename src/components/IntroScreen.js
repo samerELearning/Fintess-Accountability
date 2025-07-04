@@ -115,7 +115,6 @@ useEffect(() => {
 const handleNameSubmit = async (e) => {
   e.preventDefault();
   if (userId && name.trim()) {
-    //await setDoc(doc(db, 'user_names', userId), { name: name.trim() });
     const userRef = doc(db, 'user_names', userId);
     const userSnap = await getDoc(userRef);
 
