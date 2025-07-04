@@ -229,7 +229,6 @@ body {
   display: none;                /* Chrome, Safari and Opera */
 }
 
-
 @keyframes blink {
   50% { opacity: 0; }
 }
