@@ -166,7 +166,7 @@ const Dashboard = () => {
             </tr>
           </thead>
           <tbody>
-            {weeklyEntries.map((entry) => (
+            {[...weeklyEntries].reverse().map((entry) => (
               <tr key={entry.id}>
                 <td>{entry.weekId}</td>
                 <td>{entry.goalDistance?.toFixed(1) ?? '-'}</td>
