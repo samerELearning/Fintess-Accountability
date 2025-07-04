@@ -142,17 +142,14 @@ const Dashboard = () => {
   }, []);
 
   return (
-  <div className="dashboard-screen">
-    <h1 className="dashboard-title">WEEKLY FITNESS DASHBOARD</h1>
-
-    <form
-      className="dashboard-form"
-      onSubmit={(e) => {
-        e.preventDefault();
-        setShowGoalConfirm(true); // show the confirmation popup
-      }}
-    >
-      {!hasSubmittedGoal ? (
+    <div className="dashboard-screen">
+      <h1 className="dashboard-title">WEEKLY FITNESS DASHBOARD</h1>
+      
+      <form className="dashboard-form" onSubmit={(e) => {
+            e.preventDefault();
+            setShowGoalConfirm(true); // show the confirmation popup
+          }}>
+        {!hasSubmittedGoal ? (
         <>
           <input
             type="number"
@@ -188,59 +185,59 @@ const Dashboard = () => {
         </>
       )}
 
-      <button
-        type="submit"
-        disabled={
-          (!hasSubmittedGoal && (!goalDistance || !goalReps)) ||
-          (hasSubmittedGoal && (!actualDistance || !actualReps))
-        }
-      >
-        SUBMIT
-      </button>
-    </form>
+        <button
+          type="submit"
+          disabled={
+            (!hasSubmittedGoal && (!goalDistance || !goalReps)) ||
+            (hasSubmittedGoal && (!actualDistance || !actualReps))
+          }
+        >
+          SUBMIT
+        </button>
 
-    {/* Popup confirmation */}
-    {showGoalConfirm && (
-      <div className="popup-overlay">
-        <div className="popup-box">
-          <p>
-            Once submitted, you won’t be able to change your goal for the week. Are you sure you want to proceed?
-          </p>
-          <div className="popup-buttons">
-            <button
-              className="mission-button"
-              onClick={() => {
-                setShowGoalConfirm(false);
-                handleSubmit();
-              }}
-            >
-              Yes, Submit
-            </button>
-            <button className="mission-button" onClick={() => setShowGoalConfirm(false)}>
-              Cancel
-            </button>
+      </form>
+          {showGoalConfirm && (
+          <div className="popup-overlay">
+            <div className="popup-box">
+              <p>
+                Once submitted, you won’t be able to change your goal for the week. Are you sure you want to proceed?
+              </p>
+              <div className="popup-buttons">
+                <button className="mission-button" onClick={() => {
+                  setShowGoalConfirm(false);
+                  handleSubmit(new Event('submit')); // proceed with actual submit
+                }}>
+                  Yes, Submit
+                </button>
+                <button className="mission-button" onClick={() => setShowGoalConfirm(false)}>
+                  Cancel
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    )}
+        )}
+ {loading ? (
+  <p className="dashboard-message">Loading your data...</p>
+) : !isFirstTimeUser ? (
+  <>
+    <h2 className="dashboard-section-title">Your Weekly History</h2>
+    <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
+      <div className="dashboard-table-wrapper">
+        <table className="dashboard-table">
+          <thead>
+            <tr>
+              <th>Week</th>
+              <th>Goal (km)</th>
+              <th>Actual (km)</th>
+              <th>Goal Reps</th>
+              <th>Actual Reps</th>
+              <th>Result</th>
+            </tr>
+          </thead>
+        </table>
 
-    {loading ? (
-      <p className="dashboard-message">Loading your data...</p>
-    ) : !isFirstTimeUser ? (
-      <>
-        <h2 className="dashboard-section-title">Your Weekly History</h2>
-        <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
+        <div className="dashboard-table-body scroll-hidden">
           <table className="dashboard-table">
-            <thead>
-              <tr>
-                <th>Week</th>
-                <th>Goal (km)</th>
-                <th>Actual (km)</th>
-                <th>Goal Reps</th>
-                <th>Actual Reps</th>
-                <th>Result</th>
-              </tr>
-            </thead>
             <tbody>
               {[...weeklyEntries].reverse().map((entry, index) => (
                 <tr
@@ -255,12 +252,8 @@ const Dashboard = () => {
                   <td>{entry.actualReps ?? '-'}</td>
                   <td>
                     {entry.goalDistance != null && entry.actualDistance != null
-                      ? `${calculateResult(entry.goalDistance, entry.actualDistance, 'km')}\n${calculateResult(
-                          entry.goalReps,
-                          entry.actualReps,
-                          'reps'
-                        )}`
-                      : entry.weekId < currentWeekId
+                    ? `${calculateResult(entry.goalDistance, entry.actualDistance, 'km')}\n${calculateResult(entry.goalReps, entry.actualReps, 'reps')}`
+                    : entry.weekId < currentWeekId
                       ? 'MIA'
                       : 'Pending'}
                   </td>
@@ -269,10 +262,14 @@ const Dashboard = () => {
             </tbody>
           </table>
         </div>
-      </>
-    ) : null}
-  </div>
-);
+      </div>
+    </div>
+  </>
+) : null}
+
+
+    </div>
+  );
 };
 
 export default Dashboard;
