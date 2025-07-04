@@ -57,6 +57,8 @@ const Dashboard = () => {
   const isFirstTimeUser = weeklyEntries.length === 0;
   const currentWeekId = getCurrentWeekId();
   const [hasSubmittedGoal, setHasSubmittedGoal] = useState(false);
+  const [showGoalConfirm, setShowGoalConfirm] = useState(false);
+
 
   
 
@@ -140,11 +142,17 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="dashboard-screen">
-      <h1 className="dashboard-title">WEEKLY FITNESS DASHBOARD</h1>
-      
-      <form className="dashboard-form" onSubmit={handleSubmit}>
-        {!hasSubmittedGoal ? (
+  <div className="dashboard-screen">
+    <h1 className="dashboard-title">WEEKLY FITNESS DASHBOARD</h1>
+
+    <form
+      className="dashboard-form"
+      onSubmit={(e) => {
+        e.preventDefault();
+        setShowGoalConfirm(true); // show the confirmation popup
+      }}
+    >
+      {!hasSubmittedGoal ? (
         <>
           <input
             type="number"
@@ -180,73 +188,91 @@ const Dashboard = () => {
         </>
       )}
 
-        <button
-          type="submit"
-          disabled={
-            (!hasSubmittedGoal && (!goalDistance || !goalReps)) ||
-            (hasSubmittedGoal && (!actualDistance || !actualReps))
-          }
-        >
-          SUBMIT
-        </button>
+      <button
+        type="submit"
+        disabled={
+          (!hasSubmittedGoal && (!goalDistance || !goalReps)) ||
+          (hasSubmittedGoal && (!actualDistance || !actualReps))
+        }
+      >
+        SUBMIT
+      </button>
+    </form>
 
-      </form>
+    {/* Popup confirmation */}
+    {showGoalConfirm && (
+      <div className="popup-overlay">
+        <div className="popup-box">
+          <p>
+            Once submitted, you won’t be able to change your goal for the week. Are you sure you want to proceed?
+          </p>
+          <div className="popup-buttons">
+            <button
+              className="mission-button"
+              onClick={() => {
+                setShowGoalConfirm(false);
+                handleSubmit();
+              }}
+            >
+              Yes, Submit
+            </button>
+            <button className="mission-button" onClick={() => setShowGoalConfirm(false)}>
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
 
- {loading ? (
-  <p className="dashboard-message">Loading your data...</p>
-) : !isFirstTimeUser ? (
-  <>
-    <h2 className="dashboard-section-title">Your Weekly History</h2>
-    <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
-      <div className="dashboard-table-wrapper">
-  <table className="dashboard-table">
-    <thead>
-      <tr>
-        <th>Week</th>
-        <th>Goal (km)</th>
-        <th>Actual (km)</th>
-        <th>Goal Reps</th>
-        <th>Actual Reps</th>
-        <th>Result</th>
-      </tr>
-    </thead>
-  </table>
-
-  <div className="dashboard-table-body scroll-hidden">
-    <table className="dashboard-table">
-      <tbody>
-        {[...weeklyEntries].reverse().map((entry, index) => (
-          <tr
-            key={entry.id}
-            className="fade-in-row"
-            style={{ animationDelay: `${index * 0.1}s` }}
-          >
-            <td>{entry.weekId}</td>
-            <td>{entry.goalDistance?.toFixed(1) ?? '-'}</td>
-            <td>{entry.actualDistance?.toFixed(1) ?? '-'}</td>
-            <td>{entry.goalReps ?? '-'}</td>
-            <td>{entry.actualReps ?? '-'}</td>
-            <td>
-              {entry.goalDistance != null && entry.actualDistance != null
-              ? `${calculateResult(entry.goalDistance, entry.actualDistance, 'km')}\n${calculateResult(entry.goalReps, entry.actualReps, 'reps')}`
-              : entry.weekId < currentWeekId
-                ? 'MIA'
-                : 'Pending'}
-            </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
+    {loading ? (
+      <p className="dashboard-message">Loading your data...</p>
+    ) : !isFirstTimeUser ? (
+      <>
+        <h2 className="dashboard-section-title">Your Weekly History</h2>
+        <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
+          <table className="dashboard-table">
+            <thead>
+              <tr>
+                <th>Week</th>
+                <th>Goal (km)</th>
+                <th>Actual (km)</th>
+                <th>Goal Reps</th>
+                <th>Actual Reps</th>
+                <th>Result</th>
+              </tr>
+            </thead>
+            <tbody>
+              {[...weeklyEntries].reverse().map((entry, index) => (
+                <tr
+                  key={entry.id}
+                  className="fade-in-row"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <td>{entry.weekId}</td>
+                  <td>{entry.goalDistance?.toFixed(1) ?? '-'}</td>
+                  <td>{entry.actualDistance?.toFixed(1) ?? '-'}</td>
+                  <td>{entry.goalReps ?? '-'}</td>
+                  <td>{entry.actualReps ?? '-'}</td>
+                  <td>
+                    {entry.goalDistance != null && entry.actualDistance != null
+                      ? `${calculateResult(entry.goalDistance, entry.actualDistance, 'km')}\n${calculateResult(
+                          entry.goalReps,
+                          entry.actualReps,
+                          'reps'
+                        )}`
+                      : entry.weekId < currentWeekId
+                      ? 'MIA'
+                      : 'Pending'}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </>
+    ) : null}
   </div>
-</div>
-
-    </div>
-  </>
-) : null}
-
-
-    </div>
-  );
+);
 };
 
 export default Dashboard;
