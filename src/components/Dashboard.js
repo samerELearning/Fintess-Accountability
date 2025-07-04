@@ -42,6 +42,9 @@ const getWeekId = (date) => {
   );
 };
 
+const getCurrentWeekId = () => getWeekId(new Date());
+
+
 const Dashboard = () => {
   const [userId, setUserId] = useState(null);
   const [goalDistance, setGoalDistance] = useState('');
@@ -52,6 +55,8 @@ const Dashboard = () => {
   const [weeklyEntries, setWeeklyEntries] = useState([]);
   const [loading, setLoading] = useState(true);
   const isFirstTimeUser = weeklyEntries.length === 0;
+  const currentWeekId = getCurrentWeekId();
+
 
 
  
@@ -209,8 +214,10 @@ const Dashboard = () => {
             <td>{entry.actualReps ?? '-'}</td>
             <td>
               {entry.goalDistance != null && entry.actualDistance != null
-                ? `${calculateResult(entry.goalDistance, entry.actualDistance, 'km')}\n${calculateResult(entry.goalReps, entry.actualReps, 'reps')}`
-                : 'MIA'}
+              ? `${calculateResult(entry.goalDistance, entry.actualDistance, 'km')}\n${calculateResult(entry.goalReps, entry.actualReps, 'reps')}`
+              : entry.weekId < currentWeekId
+                ? 'MIA'
+                : 'Pending'}
             </td>
           </tr>
         ))}
