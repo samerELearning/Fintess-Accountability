@@ -175,7 +175,7 @@ const Dashboard = () => {
 
  {loading ? (
   <p className="dashboard-message">Loading your data...</p>
-) : (
+) : !isFirstTimeUser ? (
   <>
     <h2 className="dashboard-section-title">Your Weekly History</h2>
     <div className="scroll-hidden" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
@@ -209,7 +209,8 @@ const Dashboard = () => {
       </table>
     </div>
   </>
-)}
+) : null}
+
 
     </div>
   );
