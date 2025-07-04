@@ -229,8 +229,67 @@ body {
   display: none;                /* Chrome, Safari and Opera */
 }
 
+.fade-in-row {
+  opacity: 0;
+  animation: slideFadeIn 0.5s forwards;
+}
+
+.fade-in-table {
+  animation: fadeIn 0.5s ease-in;
+}
+
+.dashboard-table-wrapper {
+  max-height: 300px;
+  overflow: hidden;
+  border: 1px solid #00ff00;
+  margin-top: 1rem;
+}
+
+.dashboard-table-body {
+  max-height: 250px;
+  overflow-y: scroll;
+  display: block;
+}
+
+.dashboard-table-body table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.dashboard-table thead,
+.dashboard-table-body tbody {
+  display: table;
+  width: 100%;
+  table-layout: fixed;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+  padding: 0.5rem;
+  text-align: center;
+  border: 1px solid #00ff00;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+
 @keyframes blink {
   50% { opacity: 0; }
+}
+
+@keyframes slideFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
 
 /* Hide number input spinners for all browsers */

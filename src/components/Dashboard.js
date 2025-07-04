@@ -178,35 +178,47 @@ const Dashboard = () => {
 ) : !isFirstTimeUser ? (
   <>
     <h2 className="dashboard-section-title">Your Weekly History</h2>
-    <div className="scroll-hidden" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
-      <table className="dashboard-table">
-        <thead>
-          <tr>
-            <th>Week</th>
-            <th>Goal (km)</th>
-            <th>Actual (km)</th>
-            <th>Goal Reps</th>
-            <th>Actual Reps</th>
-            <th>Result</th>
+    <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
+      <div className="dashboard-table-wrapper">
+  <table className="dashboard-table">
+    <thead>
+      <tr>
+        <th>Week</th>
+        <th>Goal (km)</th>
+        <th>Actual (km)</th>
+        <th>Goal Reps</th>
+        <th>Actual Reps</th>
+        <th>Result</th>
+      </tr>
+    </thead>
+  </table>
+
+  <div className="dashboard-table-body scroll-hidden">
+    <table className="dashboard-table">
+      <tbody>
+        {[...weeklyEntries].reverse().map((entry, index) => (
+          <tr
+            key={entry.id}
+            className="fade-in-row"
+            style={{ animationDelay: `${index * 0.1}s` }}
+          >
+            <td>{entry.weekId}</td>
+            <td>{entry.goalDistance?.toFixed(1) ?? '-'}</td>
+            <td>{entry.actualDistance?.toFixed(1) ?? '-'}</td>
+            <td>{entry.goalReps ?? '-'}</td>
+            <td>{entry.actualReps ?? '-'}</td>
+            <td>
+              {entry.goalDistance != null && entry.actualDistance != null
+                ? `${calculateResult(entry.goalDistance, entry.actualDistance, 'km')}\n${calculateResult(entry.goalReps, entry.actualReps, 'reps')}`
+                : 'MIA'}
+            </td>
           </tr>
-        </thead>
-        <tbody>
-          {[...weeklyEntries].reverse().map((entry) => (
-            <tr key={entry.id}>
-              <td>{entry.weekId}</td>
-              <td>{entry.goalDistance?.toFixed(1) ?? '-'}</td>
-              <td>{entry.actualDistance?.toFixed(1) ?? '-'}</td>
-              <td>{entry.goalReps ?? '-'}</td>
-              <td>{entry.actualReps ?? '-'}</td>
-              <td>
-                {entry.goalDistance != null && entry.actualDistance != null
-                  ? `${calculateResult(entry.goalDistance, entry.actualDistance, 'km')}\n${calculateResult(entry.goalReps, entry.actualReps, 'reps')}`
-                  : 'MIA'}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+        ))}
+      </tbody>
+    </table>
+  </div>
+</div>
+
     </div>
   </>
 ) : null}
