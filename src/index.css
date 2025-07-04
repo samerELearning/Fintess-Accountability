@@ -220,6 +220,15 @@ body {
   justify-content: center;
 }
 
+.scroll-hidden {
+  scrollbar-width: none;        /* Firefox */
+  -ms-overflow-style: none;     /* Internet Explorer 10+ */
+}
+
+.scroll-hidden::-webkit-scrollbar {
+  display: none;                /* Chrome, Safari and Opera */
+}
+
 
 @keyframes blink {
   50% { opacity: 0; }
