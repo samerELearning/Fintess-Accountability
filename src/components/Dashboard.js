@@ -141,6 +141,48 @@ const Dashboard = () => {
     return diff >= 0 ? `+${diff.toFixed(2)} ${unit}` : `${diff.toFixed(2)} ${unit}`;
   }, []);
 
+  const getFullWeekRange = (entries) => {
+  if (entries.length === 0) return [];
+
+  const parseWeekId = (weekId) => {
+    const [year, week] = weekId.split('-W').map(Number);
+    return { year, week };
+  };
+
+  const toComparable = ({ year, week }) => year * 100 + week;
+
+  const sorted = [...entries].sort((a, b) => {
+    return toComparable(parseWeekId(a.weekId)) - toComparable(parseWeekId(b.weekId));
+  });
+
+  const { year: startYear, week: startWeek } = parseWeekId(sorted[0].weekId);
+  const { year: endYear, week: endWeek } = parseWeekId(sorted[sorted.length - 1].weekId);
+
+  const result = [];
+  for (let y = startYear; y <= endYear; y++) {
+    const start = y === startYear ? startWeek : 1;
+    const end = y === endYear ? endWeek : 53;
+    for (let w = start; w <= end; w++) {
+      const weekStr = `${y}-W${w.toString().padStart(2, '0')}`;
+      const found = entries.find((e) => e.weekId === weekStr);
+      result.push(
+        found || {
+          id: weekStr,
+          weekId: weekStr,
+          goalDistance: null,
+          actualDistance: null,
+          goalReps: null,
+          actualReps: null,
+          missing: true, // tag it as missing
+        }
+      );
+    }
+  }
+
+  return result;
+};
+
+  
   return (
     <div className="dashboard-screen">
       <h1 className="dashboard-title">WEEKLY FITNESS DASHBOARD</h1>
@@ -243,26 +285,28 @@ const Dashboard = () => {
         <div className="dashboard-table-body scroll-hidden">
           <table className="dashboard-table">
             <tbody>
-              {[...weeklyEntries].reverse().map((entry, index) => (
-                <tr
-                  key={entry.id}
-                  className="fade-in-row"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <td>{entry.weekId}</td>
-                  <td>{entry.goalDistance?.toFixed(1) ?? '-'}</td>
-                  <td>{entry.actualDistance?.toFixed(1) ?? '-'}</td>
-                  <td>{entry.goalReps ?? '-'}</td>
-                  <td>{entry.actualReps ?? '-'}</td>
-                  <td>
-                    {entry.goalDistance != null && entry.actualDistance != null
-                    ? `${calculateResult(entry.goalDistance, entry.actualDistance, 'km')}\n${calculateResult(entry.goalReps, entry.actualReps, 'reps')}`
-                    : entry.weekId < currentWeekId
-                      ? 'MIA'
-                      : 'Pending'}
-                  </td>
-                </tr>
-              ))}
+              {getFullWeekRange([...weeklyEntries]).reverse().map((entry, index) => (
+              <tr
+                key={entry.id}
+                className="fade-in-row"
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
+                <td>{entry.weekId}</td>
+                <td>{entry.goalDistance?.toFixed(1) ?? '-'}</td>
+                <td>{entry.actualDistance?.toFixed(1) ?? '-'}</td>
+                <td>{entry.goalReps ?? '-'}</td>
+                <td>{entry.actualReps ?? '-'}</td>
+                <td>
+                  {entry.missing
+                    ? 'MIA'
+                    : entry.goalDistance != null && entry.actualDistance != null
+                      ? `${calculateResult(entry.goalDistance, entry.actualDistance, 'km')}\n${calculateResult(entry.goalReps, entry.actualReps, 'reps')}`
+                      : entry.weekId < currentWeekId
+                        ? 'MIA'
+                        : 'Pending'}
+                </td>
+              </tr>
+            ))}
             </tbody>
           </table>
         </div>
