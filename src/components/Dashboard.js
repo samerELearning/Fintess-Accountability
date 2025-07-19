@@ -10,6 +10,17 @@ import {
   onSnapshot,
   serverTimestamp,
 } from 'firebase/firestore';
+import {
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  AreaChart,
+  Area
+} from 'recharts';
+
 
 // Firebase config
 const firebaseConfig = {
@@ -58,6 +69,8 @@ const Dashboard = () => {
   const currentWeekId = getCurrentWeekId();
   const [hasSubmittedGoal, setHasSubmittedGoal] = useState(false);
   const [showGoalConfirm, setShowGoalConfirm] = useState(false);
+  const [selectedRange, setSelectedRange] = useState('90d');
+
 
 
   
@@ -79,13 +92,23 @@ const Dashboard = () => {
     const q = query(entriesRef);
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const entries = snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
-      setWeeklyEntries(entries);
-      setLoading(false); // Set loading to false once data is fetched
-
-      const currentWeekEntry = entries.find(entry => entry.weekId === currentWeekId);
-      setHasSubmittedGoal(!!currentWeekEntry?.goalDistance);
+    const entries = snapshot.docs.map((doc) => {
+      const data = doc.data();
+      const totalPoints = (data.actualDistance || 0) + ((data.actualReps || 0) / 20);
+      return {
+        id: doc.id,
+        ...data,
+        totalPoints,
+      };
     });
+
+    setWeeklyEntries(entries);
+    setLoading(false); // Set loading to false once data is fetched
+
+    const currentWeekEntry = entries.find(entry => entry.weekId === currentWeekId);
+    setHasSubmittedGoal(!!currentWeekEntry?.goalDistance);
+  });
+
 
     return () => unsubscribe();
   }, [userId]);
@@ -181,6 +204,26 @@ const Dashboard = () => {
 
   return result;
 };
+
+  const calculateDateFromRange = (range) => {
+    const now = new Date();
+    const days = {
+      '30d': 30,
+      '90d': 90,
+      '1y': 365,
+      'all': 10000, // effectively all
+    }[range] || 90;
+
+    return new Date(now.setDate(now.getDate() - days));
+  };
+
+  const filteredData = weeklyEntries.filter(entry => {
+    const entryDate = entry.timestamp?.toDate?.();
+    return entryDate && entryDate >= calculateDateFromRange(selectedRange);
+  }).map(entry => ({
+    name: entry.weekId,
+    points: entry.totalPoints,
+  }));
 
   
   return (
@@ -311,6 +354,35 @@ const Dashboard = () => {
           </table>
         </div>
       </div>
+    </div>
+    <div className="dashboard-graph-section">
+      <h2 className="dashboard-section-title">Your Progress Curve</h2>
+      <div className="graph-controls">
+        {['30d', '90d', '1y', 'all'].map((range) => (
+          <button
+            key={range}
+            className={`graph-button ${selectedRange === range ? 'active' : ''}`}
+            onClick={() => setSelectedRange(range)}
+          >
+            {range === '30d' ? '30 Days' : range === '90d' ? '90 Days' : range === '1y' ? '1 Year' : 'All Time'}
+          </button>
+        ))}
+      </div>
+
+      <ResponsiveContainer width="100%" height={300}>
+        <AreaChart data={filteredData}>
+          <XAxis dataKey="name" />
+          <YAxis />
+          <Tooltip />
+          <Area
+      type="monotone"
+      dataKey="points"
+      stroke="#00FF00"
+      fill="#00FF00"
+      fillOpacity={0.2}
+    />
+        </AreaChart>
+      </ResponsiveContainer>
     </div>
   </>
 ) : null}

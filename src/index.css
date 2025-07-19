@@ -101,7 +101,7 @@ body {
 }
 
 .dashboard-screen {
-  height: 100vh;
+  /*height: 100vh;*/
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -236,13 +236,12 @@ body {
 
 .fade-in-table {
   animation: fadeIn 0.5s ease-in;
+  border: 1px solid #00ff00;
 }
 
 .dashboard-table-wrapper {
   max-height: 300px;
   overflow: hidden;
-  border: 1px solid #00ff00;
-  margin-top: 1rem;
 }
 
 .dashboard-table-body {
@@ -301,6 +300,36 @@ body {
   margin-top: 1.5rem;
   display: flex;
   justify-content: space-around;
+}
+
+.graph-controls {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  justify-content: center;
+}
+
+.graph-button {
+  padding: 0.4rem 1rem;
+  background: transparent;
+  border: 2px solid #00FF00;
+  color: #00FF00;
+  font-family: 'IBM Plex Mono', monospace;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.graph-button.active,
+.graph-button:hover {
+  background-color: #00FF00;
+  color: black;
+}
+
+.dashboard-graph-section {
+  margin-top: 3rem;
+  /*padding-top: 1.5rem; */
+  width: 100%;
+  max-width: 800px;
 }
 
 
