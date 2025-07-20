@@ -6,6 +6,7 @@ import {
   doc,
   setDoc,
   collection,
+  getDoc,
   query,
   onSnapshot,
   serverTimestamp,
@@ -70,21 +71,34 @@ const Dashboard = () => {
   const [hasSubmittedGoal, setHasSubmittedGoal] = useState(false);
   const [showGoalConfirm, setShowGoalConfirm] = useState(false);
   const [selectedRange, setSelectedRange] = useState('90d');
+  const [isAdmin, setIsAdmin] = useState(false);
+
 
 
 
   
 
   useEffect(() => {
-    signInAnonymously(auth).catch((error) => {
+  signInAnonymously(auth)
+    .then(() => {
+      const unsubscribe = onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          setUserId(user.uid);
+
+          // 🔐 Check if the user is an admin
+          const adminDocRef = doc(db, 'admins', user.uid);
+          const adminDocSnap = await getDoc(adminDocRef);
+          setIsAdmin(adminDocSnap.exists());
+        }
+      });
+
+      return () => unsubscribe();
+    })
+    .catch((error) => {
       console.error('Auth Error:', error);
     });
-    onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setUserId(user.uid);
-      }
-    });
-  }, []);
+}, []);
+
 
   useEffect(() => {
     if (!userId) return;
@@ -228,6 +242,14 @@ const Dashboard = () => {
   
   return (
     <div className="dashboard-screen">
+      {isAdmin && (
+        <div className="admin-button-container">
+          <button className="admin-button" onClick={() => alert('Redirect to admin dashboard')}>
+            Admin Dashboard
+          </button>
+        </div>
+      )}
+
       <h1 className="dashboard-title">WEEKLY FITNESS DASHBOARD</h1>
       
       <form className="dashboard-form" onSubmit={(e) => {
