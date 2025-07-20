@@ -57,7 +57,8 @@ const getWeekId = (date) => {
 const getCurrentWeekId = () => getWeekId(new Date());
 
 
-const Dashboard = () => {
+const Dashboard = ({ setView }) => {
+
   const [userId, setUserId] = useState(null);
   const [goalDistance, setGoalDistance] = useState('');
   const [actualDistance, setActualDistance] = useState('');
@@ -79,25 +80,37 @@ const Dashboard = () => {
   
 
   useEffect(() => {
-  signInAnonymously(auth)
-    .then(() => {
-      const unsubscribe = onAuthStateChanged(auth, async (user) => {
+  let unsubscribe;
+
+  const doAuthAndCheckAdmin = async () => {
+    try {
+      await signInAnonymously(auth);
+
+      unsubscribe = onAuthStateChanged(auth, async (user) => {
         if (user) {
           setUserId(user.uid);
 
-          // 🔐 Check if the user is an admin
           const adminDocRef = doc(db, 'admins', user.uid);
           const adminDocSnap = await getDoc(adminDocRef);
-          setIsAdmin(adminDocSnap.exists());
+          if (adminDocSnap.exists()) {
+            setIsAdmin(true);
+          }
         }
       });
-
-      return () => unsubscribe();
-    })
-    .catch((error) => {
+    } catch (error) {
       console.error('Auth Error:', error);
-    });
+    }
+  };
+
+  doAuthAndCheckAdmin();
+
+  return () => {
+    if (typeof unsubscribe === 'function') {
+      unsubscribe();
+    }
+  };
 }, []);
+
 
 
   useEffect(() => {
@@ -244,7 +257,7 @@ const Dashboard = () => {
     <div className="dashboard-screen">
       {isAdmin && (
         <div className="admin-button-container">
-          <button className="admin-button" onClick={() => alert('Redirect to admin dashboard')}>
+          <button className="admin-button" onClick={() => setView('admin')}>
             Admin Dashboard
           </button>
         </div>
