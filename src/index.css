@@ -356,6 +356,39 @@ body {
   box-shadow: 0 0 10px #00FF00, 0 0 20px #00FF00;
 }
 
+.admin-action-button {
+  background-color: transparent;
+  border: 1px solid #00ff00;
+  color: #00ff00;
+  padding: 5px 10px;
+  margin: 0 5px;
+  cursor: pointer;
+  border-radius: 4px;
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 0.9rem;
+  transition: background-color 0.2s, color 0.2s;
+}
+
+.admin-action-button:hover {
+  background-color: #00ff00;
+  color: black;
+}
+
+.admin-action-button.delete:hover {
+  background-color: red;
+  color: white;
+}
+
+.admin-action-button.block:hover {
+  background-color: orange;
+  color: black;
+}
+
+.admin-action-button.unblock:hover {
+  background-color: #00ff00;
+  color: black;
+}
+
 @keyframes blink {
   50% { opacity: 0; }
 }

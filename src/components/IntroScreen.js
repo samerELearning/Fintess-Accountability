@@ -122,6 +122,7 @@ const handleNameSubmit = async (e) => {
       await setDoc(userRef, {
         name: name.trim(),
         joinedAt: serverTimestamp(),
+        isBlocked: false,
       });
     }
 
