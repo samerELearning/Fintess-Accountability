@@ -78,33 +78,43 @@ useEffect(() => {
   const auth = getAuth();
 
   signInAnonymously(auth)
-    .then(() => {
-      const unsubscribe = auth.onAuthStateChanged(async (user) => {
-        if (user) {
-          setUserId(user.uid);
+  .then(() => {
+    const unsubscribe = auth.onAuthStateChanged(async (user) => {
+      if (user) {
+        setUserId(user.uid);
 
-          const nameDoc = await getDoc(doc(db, 'user_names', user.uid));
-          if (nameDoc.exists()) {//nameDoc.exists()
-            const greeting = getGreeting(nameDoc.data().name);
-            runTyping(greeting, () => setTimeout(() => onFinish(), 1000));
-          } else {
-            runTyping(getGreeting(), () => {
-              setTimeout(() => {
-                setPhase('askName');
-                runTyping('State your name', () => {
-                  setShowInput(true);
-                });
-              }, 1000);
-            });
+        const nameDoc = await getDoc(doc(db, 'user_names', user.uid));
+        if (nameDoc.exists()) {
+          const data = nameDoc.data();
+
+          // Blocked user logic
+          if (data.isBlocked) {
+            alert(data.blockMessage || "You are blocked from accessing the site.");
+            return; // Stop execution
           }
-        }
-      });
 
-      return unsubscribe;
-    })
-    .catch((error) => {
-      console.error("Anonymous sign-in error:", error);
+          const greeting = getGreeting(data.name);
+          runTyping(greeting, () => setTimeout(() => onFinish(), 1000));
+        } else {
+          // First-time user
+          runTyping(getGreeting(), () => {
+            setTimeout(() => {
+              setPhase('askName');
+              runTyping('State your name', () => {
+                setShowInput(true);
+              });
+            }, 1000);
+          });
+        }
+      }
     });
+
+    return unsubscribe;
+  })
+  .catch((error) => {
+    console.error("Authentication error:", error);
+  });
+
 }, [started, db, onFinish]);
 
 

@@ -12,6 +12,10 @@ const AdminDashboard = ({ setView }) => {
     const [joinedDateFilter, setJoinedDateFilter] = useState('');
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [pendingDeleteUserId, setPendingDeleteUserId] = useState(null);
+    const [showBlockConfirm, setShowBlockConfirm] = useState(false);
+    const [blockMessage, setBlockMessage] = useState('');
+    const [pendingBlockUserId, setPendingBlockUserId] = useState(null);
+
 
 
     const db = getFirestore();
@@ -23,7 +27,11 @@ const AdminDashboard = ({ setView }) => {
     };
 
     const toggleBlockUser = async (userId, shouldBlock) => {
-    await updateDoc(doc(db, 'user_names', userId), { isBlocked: shouldBlock });
+    await updateDoc(doc(db, 'user_names', userId), {
+    isBlocked: shouldBlock,
+    blockMessage: shouldBlock ? blockMessage : '', // Set message on block, clear on unblock
+    });
+
     setUsers(prev =>
         prev.map(u => (u.userId === userId ? { ...u, isBlocked: shouldBlock } : u))
     );
@@ -180,18 +188,29 @@ const AdminDashboard = ({ setView }) => {
                                 <button
                                     className="admin-action-button delete"
                                     onClick={(e) => {
-                                        e.stopPropagation();
-                                        setPendingDeleteUserId(user.userId);
-                                        setShowDeleteConfirm(true);
+                                    e.stopPropagation();
+                                    setPendingDeleteUserId(user.userId);
+                                    setShowDeleteConfirm(true);
                                     }}
-                                    >
+                                >
                                     🗑️
-                                    </button>
-
-                                <button className={`admin-action-button ${user.isBlocked ? 'unblock' : 'block'}`} onClick={(e) => { e.stopPropagation(); toggleBlockUser(user.userId, !user.isBlocked); }}>
-                                {user.isBlocked ? 'Unblock' : 'Block'}
+                                </button>
+                                <button
+                                    className={`admin-action-button ${user.isBlocked ? 'unblock' : 'block'}`}
+                                    onClick={(e) => {
+                                    e.stopPropagation();
+                                    if (user.isBlocked) {
+                                        toggleBlockUser(user.userId, false);
+                                    } else {
+                                        setPendingBlockUserId(user.userId);
+                                        setShowBlockConfirm(true);
+                                    }
+                                    }}
+                                >
+                                    {user.isBlocked ? 'Unblock' : 'Block'}
                                 </button>
                             </td>
+
                             </tr>
                         ))}
                         </tbody>
@@ -202,33 +221,79 @@ const AdminDashboard = ({ setView }) => {
         {showDeleteConfirm && (
         <div className="popup-overlay">
             <div className="popup-box">
-            <p>
-                This will permanently delete this user and all related data. Are you sure you want to proceed?
-            </p>
-            <div className="popup-buttons">
-                <button
-                className="mission-button"
-                onClick={() => {
-                    deleteUser(pendingDeleteUserId);
-                    setShowDeleteConfirm(false);
-                    setPendingDeleteUserId(null);
-                }}
-                >
-                Yes, Delete
-                </button>
-                <button
-                className="mission-button"
-                onClick={() => {
-                    setShowDeleteConfirm(false);
-                    setPendingDeleteUserId(null);
-                }}
-                >
-                Cancel
-                </button>
-            </div>
+                <p>
+                    This will permanently delete this user and all related data. Are you sure you want to proceed?
+                </p>
+                <div className="popup-buttons">
+                    <button
+                    className="mission-button"
+                    onClick={() => {
+                        deleteUser(pendingDeleteUserId);
+                        setShowDeleteConfirm(false);
+                        setPendingDeleteUserId(null);
+                    }}
+                    >
+                    Yes, Delete
+                    </button>
+                    <button
+                    className="mission-button"
+                    onClick={() => {
+                        setShowDeleteConfirm(false);
+                        setPendingDeleteUserId(null);
+                    }}
+                    >
+                    Cancel
+                    </button>
+                </div>
             </div>
         </div>
         )}
+        {showBlockConfirm && (
+        <div className="popup-overlay">
+            <div className="popup-box">
+                <p>Enter a message to show the user upon blocking:</p>
+                <textarea
+                    value={blockMessage}
+                    onChange={(e) => setBlockMessage(e.target.value)}
+                    placeholder="Reason for blocking..."
+                    rows={4}
+                    style={{
+                    width: '100%',
+                    padding: '0.5rem',
+                    background: 'black',
+                    color: '#00FF00',
+                    border: '1px solid #00FF00',
+                    fontFamily: 'IBM Plex Mono, monospace',
+                    marginTop: '1rem'
+                    }}
+                />
+                <div className="popup-buttons">
+                    <button
+                    className="mission-button"
+                    onClick={() => {
+                        toggleBlockUser(pendingBlockUserId, true);
+                        setShowBlockConfirm(false);
+                        setBlockMessage('');
+                        setPendingBlockUserId(null);
+                    }}
+                    >
+                    Confirm Block
+                    </button>
+                    <button
+                    className="mission-button"
+                    onClick={() => {
+                        setShowBlockConfirm(false);
+                        setBlockMessage('');
+                        setPendingBlockUserId(null);
+                    }}
+                    >
+                    Cancel
+                    </button>
+                </div>
+            </div>
+        </div>
+        )}
+
 
     </div>
   );
