@@ -34,15 +34,53 @@ const AdminDashboard = ({ setView }) => {
             
             const currentWeekId = getWeekId(new Date());
             let miaCount = 0;
+            const weekIds = new Set();
             weeklySnapshot.forEach(doc => {
             const data = doc.data();
+            weekIds.add(doc.id);
+
             if (
-                (data.goalDistance && (data.actualDistance == null || data.actualReps == null)) &&
+                data.goalDistance &&
+                (data.actualDistance == null || data.actualReps == null) &&
                 doc.id < currentWeekId
             ) {
                 miaCount++;
             }
             });
+
+            // Helper to parse and generate week ranges
+            const parseWeekId = (weekId) => {
+            const [year, week] = weekId.split('-W').map(Number);
+            return { year, week };
+            };
+
+            const getFullWeekRange = (start, end) => {
+            const weeks = [];
+            let current = { ...start };
+            while (current.year < end.year || (current.year === end.year && current.week <= end.week)) {
+                weeks.push(`${current.year}-W${String(current.week).padStart(2, '0')}`);
+                current.week++;
+                if (current.week > 52) {
+                current.week = 1;
+                current.year++;
+                }
+            }
+            return weeks;
+            };
+
+            // Calculate full range of weeks since user joined
+            if (joinedAt) {
+            const startWeek = parseWeekId(getWeekId(joinedAt.toDate()));
+            const endWeek = parseWeekId(currentWeekId);
+            const fullWeeks = getFullWeekRange(startWeek, endWeek);
+
+            fullWeeks.forEach((week) => {
+                if (!weekIds.has(week) && week < currentWeekId) {
+                miaCount++;
+                }
+            });
+            }
+
 
             usersData.push({ userId, name, joinedAt, miaCount, isBlocked });
         }
