@@ -39,6 +39,11 @@ const getGreeting = (name) => {
   const [nameSubmitted, setNameSubmitted] = useState(false);
   const [started, setStarted] = useState(false);
   const [, { sound }] = useSound(typingSound, { volume: 0.5 });
+  const [blockMessagePopup, setBlockMessagePopup] = useState('');
+  const [showBlockPopup, setShowBlockPopup] = useState(false);
+
+
+
 
 const runTyping = async (message, onDone) => {
   let index = 0;
@@ -89,9 +94,11 @@ useEffect(() => {
 
           // Blocked user logic
           if (data.isBlocked) {
-            alert(data.blockMessage || "You are blocked from accessing the site.");
-            return; // Stop execution
+            setBlockMessagePopup(data.blockMessage || "You are blocked from accessing the site.");
+            setShowBlockPopup(true);
+            return;
           }
+
 
           const greeting = getGreeting(data.name);
           runTyping(greeting, () => setTimeout(() => onFinish(), 1000));
@@ -196,9 +203,24 @@ return (
         )}
       </>
     )}
-  </div>
-);
+    {showBlockPopup && (
+      <div className="popup-overlay">
+        <div className="popup-box">
+          <h2 style={{ marginBottom: '0.5rem', color: '#FF3333' }}>🚫 You're Blocked</h2>
+          <h4 style={{ marginBottom: '1rem', color: '#00FF00' }}>Reason:</h4>
+          <p style={{ marginBottom: '1.5rem', color: '#00FF00' }}>{blockMessagePopup}</p>
+          <div className="popup-buttons">
+            <button className="mission-button" onClick={() => setShowBlockPopup(false)}>
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
 
+  </div>
+  
+);
 
 };
 
