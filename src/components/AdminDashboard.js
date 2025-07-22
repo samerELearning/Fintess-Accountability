@@ -4,7 +4,7 @@ import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc } from 'fi
 import { getWeekId } from './Dashboard';
 
 
-const AdminDashboard = () => {
+const AdminDashboard = ({ setView }) => {
     const [users, setUsers] = useState([]);
     const db = getFirestore();
 
@@ -55,7 +55,13 @@ const AdminDashboard = () => {
 
   return (
     <div className="dashboard-screen">
-        <h1 className="dashboard-title">User Management</h1>
+        <div className="admin-back-button-container">
+            <button className="admin-button" onClick={() => setView('user')}>
+                ← Back to Dashboard
+            </button>
+        </div>
+
+        <h1 className="dashboard-title">USER MANAGEMENT</h1>
         <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
             <div className="dashboard-table-wrapper">
                 <table className="dashboard-table">

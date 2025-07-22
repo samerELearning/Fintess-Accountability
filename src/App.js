@@ -12,7 +12,7 @@ const App = () => {
     <div className="min-h-screen bg-black text-[#00ff00]">
       {introComplete ? (
         view === 'admin' ? (
-          <AdminDashboard />
+          <AdminDashboard setView={setView}/>
         ) : (
           <Dashboard setView={setView} />
         )

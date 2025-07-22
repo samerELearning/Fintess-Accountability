@@ -389,6 +389,14 @@ body {
   color: black;
 }
 
+.admin-back-button-container {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1000;
+}
+
+
 @keyframes blink {
   50% { opacity: 0; }
 }
