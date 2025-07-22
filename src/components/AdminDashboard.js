@@ -4,6 +4,7 @@ import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc } from 'fi
 import { getWeekId } from './Dashboard';
 
 
+
 const AdminDashboard = ({ setView }) => {
     const [users, setUsers] = useState([]);
     const [searchName, setSearchName] = useState('');
@@ -21,20 +22,30 @@ const AdminDashboard = ({ setView }) => {
     const db = getFirestore();
 
     const deleteUser = async (userId) => {
-    await deleteDoc(doc(db, 'user_names', userId));
-    // Delete all user weekly data if needed
-    setUsers(prev => prev.filter(u => u.userId !== userId));
+        // Delete user from 'user_names'
+        await deleteDoc(doc(db, 'user_names', userId));
+
+        // Delete all weekly entries from artifacts path
+        const weeklyCollection = collection(db, `artifacts/default-fitness-app/users/${userId}/weekly_distances`);
+        const weeklyDocs = await getDocs(weeklyCollection);
+
+        const deletePromises = weeklyDocs.docs.map((doc) => deleteDoc(doc.ref));
+        await Promise.all(deletePromises);
+
+        // Update local state
+        setUsers(prev => prev.filter(u => u.userId !== userId));
     };
 
-    const toggleBlockUser = async (userId, shouldBlock) => {
-    await updateDoc(doc(db, 'user_names', userId), {
-    isBlocked: shouldBlock,
-    blockMessage: shouldBlock ? blockMessage : '', // Set message on block, clear on unblock
-    });
 
-    setUsers(prev =>
-        prev.map(u => (u.userId === userId ? { ...u, isBlocked: shouldBlock } : u))
-    );
+    const toggleBlockUser = async (userId, shouldBlock) => {
+        await updateDoc(doc(db, 'user_names', userId), {
+        isBlocked: shouldBlock,
+        blockMessage: shouldBlock ? blockMessage : '', // Set message on block, clear on unblock
+        });
+
+        setUsers(prev =>
+            prev.map(u => (u.userId === userId ? { ...u, isBlocked: shouldBlock } : u))
+        );
     };
 
 
