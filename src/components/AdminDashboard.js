@@ -10,6 +10,9 @@ const AdminDashboard = ({ setView }) => {
     const [miaFilter, setMiaFilter] = useState('');
     const [statusFilter, setStatusFilter] = useState(''); // 'active' | 'blocked' | ''
     const [joinedDateFilter, setJoinedDateFilter] = useState('');
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+    const [pendingDeleteUserId, setPendingDeleteUserId] = useState(null);
+
 
     const db = getFirestore();
 
@@ -128,20 +131,20 @@ const AdminDashboard = ({ setView }) => {
                 value={joinedDateFilter}
                 onChange={(e) => setJoinedDateFilter(e.target.value)}
             />
-            </div>
+        </div>
 
         <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
             <div className="dashboard-table-wrapper">
                 <table className="dashboard-table">
-                <thead>
-                    <tr>
-                    <th>Name</th>
-                    <th>Joined</th>
-                    <th>MIA Count</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                    </tr>
-                </thead>
+                    <thead>
+                        <tr>
+                        <th>Name</th>
+                        <th>Joined</th>
+                        <th>MIA Count</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                        </tr>
+                    </thead>
                 </table>
 
                 <div className="dashboard-table-body scroll-hidden">
@@ -174,7 +177,17 @@ const AdminDashboard = ({ setView }) => {
                             <td>{user.miaCount}</td>
                             <td>{user.isBlocked ? 'Blocked' : 'Active'}</td>
                             <td>
-                                <button className="admin-action-button delete" onClick={(e) => { e.stopPropagation(); deleteUser(user.userId); }}>🗑️</button>
+                                <button
+                                    className="admin-action-button delete"
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        setPendingDeleteUserId(user.userId);
+                                        setShowDeleteConfirm(true);
+                                    }}
+                                    >
+                                    🗑️
+                                    </button>
+
                                 <button className={`admin-action-button ${user.isBlocked ? 'unblock' : 'block'}`} onClick={(e) => { e.stopPropagation(); toggleBlockUser(user.userId, !user.isBlocked); }}>
                                 {user.isBlocked ? 'Unblock' : 'Block'}
                                 </button>
@@ -186,6 +199,36 @@ const AdminDashboard = ({ setView }) => {
                 </div>
             </div>
         </div>
+        {showDeleteConfirm && (
+        <div className="popup-overlay">
+            <div className="popup-box">
+            <p>
+                This will permanently delete this user and all related data. Are you sure you want to proceed?
+            </p>
+            <div className="popup-buttons">
+                <button
+                className="mission-button"
+                onClick={() => {
+                    deleteUser(pendingDeleteUserId);
+                    setShowDeleteConfirm(false);
+                    setPendingDeleteUserId(null);
+                }}
+                >
+                Yes, Delete
+                </button>
+                <button
+                className="mission-button"
+                onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setPendingDeleteUserId(null);
+                }}
+                >
+                Cancel
+                </button>
+            </div>
+            </div>
+        </div>
+        )}
 
     </div>
   );
