@@ -6,6 +6,11 @@ import { getWeekId } from './Dashboard';
 
 const AdminDashboard = ({ setView }) => {
     const [users, setUsers] = useState([]);
+    const [searchName, setSearchName] = useState('');
+    const [miaFilter, setMiaFilter] = useState('');
+    const [statusFilter, setStatusFilter] = useState(''); // 'active' | 'blocked' | ''
+    const [joinedDateFilter, setJoinedDateFilter] = useState('');
+
     const db = getFirestore();
 
     const deleteUser = async (userId) => {
@@ -100,6 +105,31 @@ const AdminDashboard = ({ setView }) => {
         </div>
 
         <h1 className="dashboard-title">USER MANAGEMENT</h1>
+        <div className="admin-filters">
+            <input
+                type="text"
+                placeholder="Search by name"
+                value={searchName}
+                onChange={(e) => setSearchName(e.target.value.toLowerCase())}
+            />
+            <input
+                type="number"
+                placeholder="MIA count"
+                value={miaFilter}
+                onChange={(e) => setMiaFilter(e.target.value)}
+            />
+            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                <option value="">All</option>
+                <option value="active">Active</option>
+                <option value="blocked">Blocked</option>
+            </select>
+            <input
+                type="date"
+                value={joinedDateFilter}
+                onChange={(e) => setJoinedDateFilter(e.target.value)}
+            />
+            </div>
+
         <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
             <div className="dashboard-table-wrapper">
                 <table className="dashboard-table">
@@ -117,7 +147,22 @@ const AdminDashboard = ({ setView }) => {
                 <div className="dashboard-table-body scroll-hidden">
                     <table className="dashboard-table">
                         <tbody>
-                        {users.map((user, index) => (
+                        {users
+                        .filter((user) => {
+                            const matchName = searchName === '' || user.name.toLowerCase().includes(searchName);
+                            const matchMIA = miaFilter === '' || user.miaCount === parseInt(miaFilter);
+                            const matchStatus =
+                            statusFilter === '' ||
+                            (statusFilter === 'active' && !user.isBlocked) ||
+                            (statusFilter === 'blocked' && user.isBlocked);
+                            const matchDate =
+                            joinedDateFilter === '' ||
+                            user.joinedAt?.toDate().toISOString().split('T')[0] === joinedDateFilter;
+
+                            return matchName && matchMIA && matchStatus && matchDate;
+                        })
+                        .map((user, index) => (
+
                             <tr
                             key={user.userId}
                             className="fade-in-row"
