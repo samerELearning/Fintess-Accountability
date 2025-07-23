@@ -1,6 +1,6 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
-import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc, addDoc } from 'firebase/firestore';
 import { getWeekId } from './Dashboard';
 
 
@@ -16,6 +16,11 @@ const AdminDashboard = ({ setView }) => {
     const [showBlockConfirm, setShowBlockConfirm] = useState(false);
     const [blockMessage, setBlockMessage] = useState('');
     const [pendingBlockUserId, setPendingBlockUserId] = useState(null);
+    const [teams, setTeams] = useState([]);
+    const [newTeamName, setNewTeamName] = useState('');
+    const [selectedMembers, setSelectedMembers] = useState([]);
+    const [showCreateTeamPopup, setShowCreateTeamPopup] = useState(false);
+
 
 
 
@@ -50,62 +55,81 @@ const AdminDashboard = ({ setView }) => {
 
 
     useEffect(() => {
-        const fetchUsers = async () => {
-        const userDocs = await getDocs(collection(db, 'user_names'));
-        const usersData = [];
+        const fetchTeams = async () => {
+            const teamsSnapshot = await getDocs(collection(db, 'teams'));
+            const teamList = [];
 
-        for (const userDoc of userDocs.docs) {
-            const userId = userDoc.id;
-            const { name, joinedAt, isBlocked = false } = userDoc.data();
-            const weeklySnapshot = await getDocs(collection(db, `artifacts/default-fitness-app/users/${userId}/weekly_distances`));
-            
-            const currentWeekId = getWeekId(new Date());
-            let miaCount = 0;
-            const weekIds = new Set();
-            weeklySnapshot.forEach(doc => {
-            const data = doc.data();
-            weekIds.add(doc.id);
-
-            if (
-                data.goalDistance &&
-                (data.actualDistance == null || data.actualReps == null) &&
-                doc.id < currentWeekId
-            ) {
-                miaCount++;
+            for (const docSnap of teamsSnapshot.docs) {
+                const data = docSnap.data();
+                teamList.push({
+                id: docSnap.id,
+                name: data.name,
+                members: data.members || [],
+                createdAt: data.createdAt?.toDate() || null,
+                });
             }
+
+            setTeams(teamList);
+        };
+
+        fetchTeams();
+
+        const fetchUsers = async () => {
+            const userDocs = await getDocs(collection(db, 'user_names'));
+            const usersData = [];
+
+            for (const userDoc of userDocs.docs) {
+                const userId = userDoc.id;
+                const { name, joinedAt, isBlocked = false } = userDoc.data();
+                const weeklySnapshot = await getDocs(collection(db, `artifacts/default-fitness-app/users/${userId}/weekly_distances`));
+                
+                const currentWeekId = getWeekId(new Date());
+                let miaCount = 0;
+                const weekIds = new Set();
+                weeklySnapshot.forEach(doc => {
+                const data = doc.data();
+                weekIds.add(doc.id);
+
+                if (
+                    data.goalDistance &&
+                    (data.actualDistance == null || data.actualReps == null) &&
+                    doc.id < currentWeekId
+                ) {
+                    miaCount++;
+                }
             });
 
             // Helper to parse and generate week ranges
             const parseWeekId = (weekId) => {
-            const [year, week] = weekId.split('-W').map(Number);
-            return { year, week };
+                const [year, week] = weekId.split('-W').map(Number);
+                return { year, week };
             };
 
             const getFullWeekRange = (start, end) => {
-            const weeks = [];
-            let current = { ...start };
-            while (current.year < end.year || (current.year === end.year && current.week <= end.week)) {
-                weeks.push(`${current.year}-W${String(current.week).padStart(2, '0')}`);
-                current.week++;
-                if (current.week > 52) {
-                current.week = 1;
-                current.year++;
+                const weeks = [];
+                let current = { ...start };
+                while (current.year < end.year || (current.year === end.year && current.week <= end.week)) {
+                    weeks.push(`${current.year}-W${String(current.week).padStart(2, '0')}`);
+                    current.week++;
+                    if (current.week > 52) {
+                    current.week = 1;
+                    current.year++;
+                    }
                 }
-            }
-            return weeks;
+                return weeks;
             };
 
             // Calculate full range of weeks since user joined
             if (joinedAt) {
-            const startWeek = parseWeekId(getWeekId(joinedAt.toDate()));
-            const endWeek = parseWeekId(currentWeekId);
-            const fullWeeks = getFullWeekRange(startWeek, endWeek);
+                const startWeek = parseWeekId(getWeekId(joinedAt.toDate()));
+                const endWeek = parseWeekId(currentWeekId);
+                const fullWeeks = getFullWeekRange(startWeek, endWeek);
 
-            fullWeeks.forEach((week) => {
-                if (!weekIds.has(week) && week < currentWeekId) {
-                miaCount++;
-                }
-            });
+                fullWeeks.forEach((week) => {
+                    if (!weekIds.has(week) && week < currentWeekId) {
+                        miaCount++;
+                    }
+                });
             }
 
 
@@ -305,6 +329,54 @@ const AdminDashboard = ({ setView }) => {
         </div>
         )}
 
+        <h1 className="dashboard-title" style={{ marginTop: '4rem' }}>TEAM MANAGEMENT</h1>
+        <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
+        <div className="dashboard-table-wrapper">
+            <table className="dashboard-table">
+            <thead>
+                <tr>
+                <th>Team Name</th>
+                <th>Members</th>
+                <th>Created At</th>
+                <th>Actions</th>
+                </tr>
+            </thead>
+            </table>
+
+            <div className="dashboard-table-body scroll-hidden">
+            <table className="dashboard-table">
+                <tbody>
+                {teams.map((team, index) => (
+                    <tr
+                    key={team.id}
+                    className="fade-in-row"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                    onClick={() => alert(`Open team profile for ${team.name}`)}
+                    >
+                    <td>{team.name}</td>
+                    <td>{team.members.length}</td>
+                    <td>{team.createdAt?.toLocaleDateString() ?? '-'}</td>
+                    <td>
+                        <button className="admin-action-button delete" onClick={(e) => {
+                        e.stopPropagation();
+                        alert('Delete team coming soon...');
+                        }}>
+                        🗑️
+                        </button>
+                        <button className="admin-action-button" onClick={(e) => {
+                        e.stopPropagation();
+                        alert('Edit team coming soon...');
+                        }}>
+                        Edit
+                        </button>
+                    </td>
+                    </tr>
+                ))}
+                </tbody>
+            </table>
+            </div>
+        </div>
+        </div>
 
     </div>
   );
