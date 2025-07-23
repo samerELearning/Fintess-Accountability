@@ -20,6 +20,10 @@ const AdminDashboard = ({ setView }) => {
     const [newTeamName, setNewTeamName] = useState('');
     const [selectedMembers, setSelectedMembers] = useState([]);
     const [showCreateTeamPopup, setShowCreateTeamPopup] = useState(false);
+    const [editingTeamId, setEditingTeamId] = useState(null);
+    const [editingTeamMembers, setEditingTeamMembers] = useState([]);
+    const [showEditTeamPopup, setShowEditTeamPopup] = useState(false);
+
 
 
 
@@ -141,6 +145,27 @@ const AdminDashboard = ({ setView }) => {
 
         fetchUsers();
     }, [db]);
+
+    const openEditTeamPopup = (teamId, currentMembers) => {
+        setEditingTeamId(teamId);
+        setEditingTeamMembers(currentMembers);
+        setShowEditTeamPopup(true);
+        };
+
+        const updateTeamMembers = async () => {
+        const teamRef = doc(db, 'teams', editingTeamId);
+        await updateDoc(teamRef, {
+            members: editingTeamMembers
+        });
+
+        setTeams(prev =>
+            prev.map(t =>
+            t.id === editingTeamId ? { ...t, members: editingTeamMembers } : t
+            )
+        );
+
+        setShowEditTeamPopup(false);
+    };
 
   return (
     <div className="dashboard-screen">
@@ -364,17 +389,21 @@ const AdminDashboard = ({ setView }) => {
                         <td>{team.createdAt?.toLocaleDateString() ?? '-'}</td>
                         <td>
                             <button className="admin-action-button delete" onClick={(e) => {
-                            e.stopPropagation();
-                            alert('Delete team coming soon...');
-                            }}>
-                            🗑️
+                                e.stopPropagation();
+                                alert('Delete team coming soon...');
+                                }}>
+                                🗑️
                             </button>
-                            <button className="admin-action-button" onClick={(e) => {
-                            e.stopPropagation();
-                            alert('Edit team coming soon...');
-                            }}>
-                            Edit
+                            <button
+                                className="admin-action-button"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    openEditTeamPopup(team.id, team.members);
+                                }}
+                                >
+                                Edit
                             </button>
+
                         </td>
                         </tr>
                     ))}
@@ -393,13 +422,13 @@ const AdminDashboard = ({ setView }) => {
                     value={newTeamName}
                     onChange={(e) => setNewTeamName(e.target.value)}
                     style={{
-                    width: '100%',
-                    margin: '1rem 0',
-                    padding: '0.5rem',
-                    background: 'black',
-                    color: '#00FF00',
-                    border: '1px solid #00FF00',
-                    fontFamily: 'IBM Plex Mono, monospace'
+                        width: '100%',
+                        margin: '1rem 0',
+                        padding: '0.5rem',
+                        background: 'black',
+                        color: '#00FF00',
+                        border: '1px solid #00FF00',
+                        fontFamily: 'IBM Plex Mono, monospace'
                     }}
                 />
                 <p>Select Members:</p>
@@ -426,15 +455,15 @@ const AdminDashboard = ({ setView }) => {
                     onClick={async () => {
                         if (!newTeamName.trim()) return alert("Team name required!");
                         const docRef = await addDoc(collection(db, 'teams'), {
-                        name: newTeamName.trim(),
-                        members: selectedMembers,
-                        createdAt: new Date()
+                            name: newTeamName.trim(),
+                            members: selectedMembers,
+                            createdAt: new Date()
                         });
                         setTeams(prev => [...prev, {
-                        id: docRef.id,
-                        name: newTeamName.trim(),
-                        members: selectedMembers,
-                        createdAt: new Date()
+                            id: docRef.id,
+                            name: newTeamName.trim(),
+                            members: selectedMembers,
+                            createdAt: new Date()
                         }]);
                         setNewTeamName('');
                         setSelectedMembers([]);
@@ -453,6 +482,42 @@ const AdminDashboard = ({ setView }) => {
             </div>
         </div>
         )}
+        {showEditTeamPopup && (
+            <div className="popup-overlay">
+                <div className="popup-box">
+                    <h3>Edit Team Members</h3>
+                    <div style={{ maxHeight: '150px', overflowY: 'scroll', marginBottom: '1rem' }}>
+                        {users.map((user) => (
+                        <label key={user.userId} style={{ display: 'block' }}>
+                            <input
+                            type="checkbox"
+                            checked={editingTeamMembers.includes(user.userId)}
+                            onChange={(e) => {
+                                const updated = e.target.checked
+                                ? [...editingTeamMembers, user.userId]
+                                : editingTeamMembers.filter(id => id !== user.userId);
+                                setEditingTeamMembers(updated);
+                            }}
+                            />
+                            {user.name}
+                        </label>
+                        ))}
+                    </div>
+                    <div className="popup-buttons">
+                        <button className="mission-button" onClick={updateTeamMembers}>
+                            Save Changes
+                        </button>
+                        <button
+                        className="mission-button"
+                        onClick={() => setShowEditTeamPopup(false)}
+                        >
+                            Cancel
+                        </button>
+                    </div>
+                </div>
+            </div>
+            )}
+
 
     </div>
   );
