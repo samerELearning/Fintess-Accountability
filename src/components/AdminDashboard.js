@@ -330,53 +330,129 @@ const AdminDashboard = ({ setView }) => {
         )}
 
         <h1 className="dashboard-title" style={{ marginTop: '4rem' }}>TEAM MANAGEMENT</h1>
-        <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
-        <div className="dashboard-table-wrapper">
-            <table className="dashboard-table">
-            <thead>
-                <tr>
-                <th>Team Name</th>
-                <th>Members</th>
-                <th>Created At</th>
-                <th>Actions</th>
-                </tr>
-            </thead>
-            </table>
+        <div style={{ marginBottom: '1rem', textAlign: 'center' }}>
+            <button className="admin-button" onClick={() => setShowCreateTeamPopup(true)}>
+                + Create Team
+            </button>
+        </div>
 
-            <div className="dashboard-table-body scroll-hidden">
-            <table className="dashboard-table">
-                <tbody>
-                {teams.map((team, index) => (
-                    <tr
-                    key={team.id}
-                    className="fade-in-row"
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                    onClick={() => alert(`Open team profile for ${team.name}`)}
-                    >
-                    <td>{team.name}</td>
-                    <td>{team.members.length}</td>
-                    <td>{team.createdAt?.toLocaleDateString() ?? '-'}</td>
-                    <td>
-                        <button className="admin-action-button delete" onClick={(e) => {
-                        e.stopPropagation();
-                        alert('Delete team coming soon...');
-                        }}>
-                        🗑️
-                        </button>
-                        <button className="admin-action-button" onClick={(e) => {
-                        e.stopPropagation();
-                        alert('Edit team coming soon...');
-                        }}>
-                        Edit
-                        </button>
-                    </td>
+        <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
+            <div className="dashboard-table-wrapper">
+                <table className="dashboard-table">
+                <thead>
+                    <tr>
+                    <th>Team Name</th>
+                    <th>Members</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
                     </tr>
-                ))}
-                </tbody>
-            </table>
+                </thead>
+                </table>
+
+                <div className="dashboard-table-body scroll-hidden">
+                <table className="dashboard-table">
+                    <tbody>
+                    {teams.map((team, index) => (
+                        <tr
+                        key={team.id}
+                        className="fade-in-row"
+                        style={{ animationDelay: `${index * 0.1}s` }}
+                        onClick={() => alert(`Open team profile for ${team.name}`)}
+                        >
+                        <td>{team.name}</td>
+                        <td>{team.members.length}</td>
+                        <td>{team.createdAt?.toLocaleDateString() ?? '-'}</td>
+                        <td>
+                            <button className="admin-action-button delete" onClick={(e) => {
+                            e.stopPropagation();
+                            alert('Delete team coming soon...');
+                            }}>
+                            🗑️
+                            </button>
+                            <button className="admin-action-button" onClick={(e) => {
+                            e.stopPropagation();
+                            alert('Edit team coming soon...');
+                            }}>
+                            Edit
+                            </button>
+                        </td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
+                </div>
             </div>
         </div>
+        {showCreateTeamPopup && (
+        <div className="popup-overlay">
+            <div className="popup-box">
+                <h3>Create a New Team</h3>
+                <input
+                    type="text"
+                    placeholder="Team name"
+                    value={newTeamName}
+                    onChange={(e) => setNewTeamName(e.target.value)}
+                    style={{
+                    width: '100%',
+                    margin: '1rem 0',
+                    padding: '0.5rem',
+                    background: 'black',
+                    color: '#00FF00',
+                    border: '1px solid #00FF00',
+                    fontFamily: 'IBM Plex Mono, monospace'
+                    }}
+                />
+                <p>Select Members:</p>
+                <div style={{ maxHeight: '150px', overflowY: 'scroll', marginBottom: '1rem' }}>
+                    {users.map((user) => (
+                    <label key={user.userId} style={{ display: 'block' }}>
+                        <input
+                        type="checkbox"
+                        checked={selectedMembers.includes(user.userId)}
+                        onChange={(e) => {
+                            const updated = e.target.checked
+                            ? [...selectedMembers, user.userId]
+                            : selectedMembers.filter((id) => id !== user.userId);
+                            setSelectedMembers(updated);
+                        }}
+                        />
+                        {user.name}
+                    </label>
+                    ))}
+                </div>
+                <div className="popup-buttons">
+                    <button
+                    className="mission-button"
+                    onClick={async () => {
+                        if (!newTeamName.trim()) return alert("Team name required!");
+                        const docRef = await addDoc(collection(db, 'teams'), {
+                        name: newTeamName.trim(),
+                        members: selectedMembers,
+                        createdAt: new Date()
+                        });
+                        setTeams(prev => [...prev, {
+                        id: docRef.id,
+                        name: newTeamName.trim(),
+                        members: selectedMembers,
+                        createdAt: new Date()
+                        }]);
+                        setNewTeamName('');
+                        setSelectedMembers([]);
+                        setShowCreateTeamPopup(false);
+                    }}
+                    >
+                    Create
+                    </button>
+                    <button
+                    className="mission-button"
+                    onClick={() => setShowCreateTeamPopup(false)}
+                    >
+                    Cancel
+                    </button>
+                </div>
+            </div>
         </div>
+        )}
 
     </div>
   );
