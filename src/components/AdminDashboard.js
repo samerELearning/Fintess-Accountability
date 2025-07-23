@@ -25,6 +25,10 @@ const AdminDashboard = ({ setView }) => {
     const [showEditTeamPopup, setShowEditTeamPopup] = useState(false);
     const [showDeleteTeamConfirm, setShowDeleteTeamConfirm] = useState(false);
     const [pendingDeleteTeamId, setPendingDeleteTeamId] = useState(null);
+    const [teamSearchTerm, setTeamSearchTerm] = useState('');
+    const [editSearchTerm, setEditSearchTerm] = useState('');
+    
+
 
 
 
@@ -447,21 +451,41 @@ const AdminDashboard = ({ setView }) => {
                     }}
                 />
                 <p>Select Members:</p>
+                <input
+                    type="text"
+                    placeholder="Search users..."
+                    value={teamSearchTerm}
+                    onChange={(e) => setTeamSearchTerm(e.target.value.toLowerCase())}
+                    style={{
+                        width: '100%',
+                        padding: '0.4rem',
+                        marginBottom: '1rem',
+                        backgroundColor: 'black',
+                        color: '#00FF00',
+                        border: '1px solid #00FF00',
+                        fontFamily: 'IBM Plex Mono, monospace'
+                    }}
+                />
+
                 <div style={{ maxHeight: '150px', overflowY: 'scroll', marginBottom: '1rem' }}>
-                    {users.map((user) => (
-                    <label key={user.userId} style={{ display: 'block' }}>
-                        <input
-                        type="checkbox"
-                        checked={selectedMembers.includes(user.userId)}
-                        onChange={(e) => {
-                            const updated = e.target.checked
-                            ? [...selectedMembers, user.userId]
-                            : selectedMembers.filter((id) => id !== user.userId);
-                            setSelectedMembers(updated);
-                        }}
-                        />
-                        {user.name}
-                    </label>
+                    {users
+                        .filter((user) =>
+                            user.name.toLowerCase().includes(teamSearchTerm)
+                        )
+                        .map((user) => (
+                            <label key={user.userId} style={{ display: 'block' }}>
+                            <input
+                                type="checkbox"
+                                checked={selectedMembers.includes(user.userId)}
+                                onChange={(e) => {
+                                const updated = e.target.checked
+                                    ? [...selectedMembers, user.userId]
+                                    : selectedMembers.filter((id) => id !== user.userId);
+                                setSelectedMembers(updated);
+                                }}
+                            />
+                            {user.name}
+                            </label>
                     ))}
                 </div>
                 <div className="popup-buttons">
@@ -501,22 +525,44 @@ const AdminDashboard = ({ setView }) => {
             <div className="popup-overlay">
                 <div className="popup-box">
                     <h3>Edit Team Members</h3>
+                    <input
+                        type="text"
+                        placeholder="Search users..."
+                        value={editSearchTerm}
+                        onChange={(e) => setEditSearchTerm(e.target.value.toLowerCase())}
+                        style={{
+                            width: '100%',
+                            padding: '0.4rem',
+                            marginBottom: '1rem',
+                            backgroundColor: 'black',
+                            color: '#00FF00',
+                            border: '1px solid #00FF00',
+                            fontFamily: 'IBM Plex Mono, monospace'
+                        }}
+                    />
+
                     <div style={{ maxHeight: '150px', overflowY: 'scroll', marginBottom: '1rem' }}>
-                        {users.map((user) => (
-                        <label key={user.userId} style={{ display: 'block' }}>
-                            <input
-                            type="checkbox"
-                            checked={editingTeamMembers.includes(user.userId)}
-                            onChange={(e) => {
-                                const updated = e.target.checked
-                                ? [...editingTeamMembers, user.userId]
-                                : editingTeamMembers.filter(id => id !== user.userId);
-                                setEditingTeamMembers(updated);
-                            }}
-                            />
-                            {user.name}
-                        </label>
+                        {users
+                            .filter((user) =>
+                                user.name.toLowerCase().includes(editSearchTerm)
+                            )
+                            .map((user) => (
+                                <label key={user.userId} style={{ display: 'block' }}>
+                                <input
+                                    type="checkbox"
+                                    checked={editingTeamMembers.includes(user.userId)}
+                                    onChange={(e) => {
+                                    const updated = e.target.checked
+                                        ? [...editingTeamMembers, user.userId]
+                                        : editingTeamMembers.filter((id) => id !== user.userId);
+                                    setEditingTeamMembers(updated);
+                                    }}
+
+                                />
+                                {user.name}
+                                </label>
                         ))}
+
                     </div>
                     <div className="popup-buttons">
                         <button className="mission-button" onClick={updateTeamMembers}>
