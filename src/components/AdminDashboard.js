@@ -23,6 +23,9 @@ const AdminDashboard = ({ setView }) => {
     const [editingTeamId, setEditingTeamId] = useState(null);
     const [editingTeamMembers, setEditingTeamMembers] = useState([]);
     const [showEditTeamPopup, setShowEditTeamPopup] = useState(false);
+    const [showDeleteTeamConfirm, setShowDeleteTeamConfirm] = useState(false);
+    const [pendingDeleteTeamId, setPendingDeleteTeamId] = useState(null);
+
 
 
 
@@ -150,9 +153,9 @@ const AdminDashboard = ({ setView }) => {
         setEditingTeamId(teamId);
         setEditingTeamMembers(currentMembers);
         setShowEditTeamPopup(true);
-        };
+    };
 
-        const updateTeamMembers = async () => {
+    const updateTeamMembers = async () => {
         const teamRef = doc(db, 'teams', editingTeamId);
         await updateDoc(teamRef, {
             members: editingTeamMembers
@@ -166,6 +169,12 @@ const AdminDashboard = ({ setView }) => {
 
         setShowEditTeamPopup(false);
     };
+
+    const deleteTeam = async (teamId) => {
+        await deleteDoc(doc(db, 'teams', teamId));
+        setTeams(prev => prev.filter(team => team.id !== teamId));
+    };
+
 
   return (
     <div className="dashboard-screen">
@@ -388,12 +397,18 @@ const AdminDashboard = ({ setView }) => {
                         <td>{team.members.length}</td>
                         <td>{team.createdAt?.toLocaleDateString() ?? '-'}</td>
                         <td>
-                            <button className="admin-action-button delete" onClick={(e) => {
-                                e.stopPropagation();
-                                alert('Delete team coming soon...');
-                                }}>
+                            <button
+                                className="admin-action-button delete"
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    setPendingDeleteTeamId(team.id);
+                                    setShowDeleteTeamConfirm(true);
+                                }}
+                                >
                                 🗑️
                             </button>
+
+
                             <button
                                 className="admin-action-button"
                                 onClick={(e) => {
@@ -516,6 +531,35 @@ const AdminDashboard = ({ setView }) => {
                     </div>
                 </div>
             </div>
+            )}
+
+            {showDeleteTeamConfirm && (
+                <div className="popup-overlay">
+                    <div className="popup-box">
+                        <p>This will permanently delete the team. Are you sure you want to proceed?</p>
+                        <div className="popup-buttons">
+                            <button
+                                className="mission-button"
+                                onClick={() => {
+                                    deleteTeam(pendingDeleteTeamId);
+                                    setShowDeleteTeamConfirm(false);
+                                    setPendingDeleteTeamId(null);
+                                }}
+                                >
+                                Yes, Delete
+                            </button>
+                            <button
+                                className="mission-button"
+                                onClick={() => {
+                                    setShowDeleteTeamConfirm(false);
+                                    setPendingDeleteTeamId(null);
+                                }}
+                                >
+                                Cancel
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
 
 
