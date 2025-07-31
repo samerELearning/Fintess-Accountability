@@ -7,6 +7,7 @@ import {
   setDoc,
   collection,
   getDoc,
+  getDocs,
   query,
   onSnapshot,
   serverTimestamp,
@@ -73,6 +74,8 @@ const Dashboard = ({ setView }) => {
   const [showGoalConfirm, setShowGoalConfirm] = useState(false);
   const [selectedRange, setSelectedRange] = useState('90d');
   const [isAdmin, setIsAdmin] = useState(false);
+  const [team, setTeam] = useState(null);
+  const [teamStats, setTeamStats] = useState([]);
 
 
 
@@ -89,7 +92,7 @@ const Dashboard = ({ setView }) => {
       unsubscribe = onAuthStateChanged(auth, async (user) => {
         if (user) {
           setUserId(user.uid);
-
+          
           const adminDocRef = doc(db, 'admins', user.uid);
           const adminDocSnap = await getDoc(adminDocRef);
           if (adminDocSnap.exists()) {
@@ -111,7 +114,62 @@ const Dashboard = ({ setView }) => {
   };
 }, []);
 
+  useEffect(() => {
+    if (!userId) return;
 
+    const fetchTeam = async () => {
+      try {
+        const teamsSnapshot = await getDocs(collection(db, "teams"));
+        const userTeam = teamsSnapshot.docs.find(doc => {
+          const members = doc.data().members || [];
+          return members.includes(userId);
+        });
+
+        if (userTeam) {
+          setTeam({ id: userTeam.id, ...userTeam.data() });
+        }
+      } catch (error) {
+        console.error("Error fetching team:", error);
+      }
+    };
+
+    fetchTeam();
+  }, [userId]);
+
+  useEffect(() => {
+  if (!team || !team.members.length) return;
+
+  const fetchTeamStats = async () => {
+    const currentWeek = getWeekId(new Date());
+    const memberStats = [];
+
+    for (const memberId of team.members) {
+      const userRef = doc(db, 'user_names', memberId);
+      const userSnap = await getDoc(userRef);
+      const name = userSnap.exists() ? userSnap.data().name : 'Unknown';
+      const isBlocked = userSnap.exists() ? userSnap.data().isBlocked : false;
+
+      const entryRef = doc(db, `artifacts/default-fitness-app/users/${memberId}/weekly_distances`, currentWeek);
+      const entrySnap = await getDoc(entryRef);
+      const data = entrySnap.exists() ? entrySnap.data() : {};
+
+      memberStats.push({
+        memberId,
+        name,
+        isBlocked,
+        goalDistance: data.goalDistance ?? null,
+        actualDistance: data.actualDistance ?? null,
+        goalReps: data.goalReps ?? null,
+        actualReps: data.actualReps ?? null,
+        weekId: currentWeek,
+      });
+    }
+
+    setTeamStats(memberStats);
+  };
+
+  fetchTeamStats();
+}, [team]);
 
   useEffect(() => {
     if (!userId) return;
@@ -419,8 +477,70 @@ const Dashboard = ({ setView }) => {
         </AreaChart>
       </ResponsiveContainer>
     </div>
+
+    
+
   </>
 ) : null}
+
+  {team && teamStats.length > 0 && (
+  <>
+    <h2 className="dashboard-section-title mt-10">Your Team {team?.name}</h2>
+
+    <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
+      <div className="dashboard-table-wrapper">
+        <table className="dashboard-table">
+          <thead>
+            <tr>
+              <th>Fire Body</th>
+              <th>Goal (km)</th>
+              <th>Actual (km)</th>
+              <th>Goal Reps</th>
+              <th>Actual Reps</th>
+              <th>Result</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+        </table>
+
+        <div className="dashboard-table-body scroll-hidden">
+          <table className="dashboard-table">
+            <tbody>
+              {teamStats
+                .filter((member) => member.memberId !== userId)
+                .map((member, index) => {
+
+                const isMIA = member.goalDistance && (member.actualDistance == null || member.actualReps == null);
+                const isPending = !member.goalDistance;
+
+                const result = !isPending && !isMIA
+                  ? `${calculateResult(member.goalDistance, member.actualDistance, 'km')}, ${calculateResult(member.goalReps, member.actualReps, 'reps')}`
+                  : member.weekId < getWeekId(new Date()) ? 'MIA' : 'Pending';
+
+                return (
+                  <tr
+                    key={member.memberId}
+                    className="fade-in-row"
+                    style={{ animationDelay: `${index * 0.1}s` }}
+                    onClick={() => alert(`Open profile for ${member.name}`)}
+                  >
+                    <td>{member.name}</td>
+                    <td>{member.goalDistance?.toFixed(1) ?? '-'}</td>
+                    <td>{member.actualDistance?.toFixed(1) ?? '-'}</td>
+                    <td>{member.goalReps ?? '-'}</td>
+                    <td>{member.actualReps ?? '-'}</td>
+                    <td>{result}</td>
+                    <td>{member.isBlocked ? 'Blocked' : 'Active'}</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </>
+)}
 
 
     </div>

@@ -469,9 +469,14 @@ const AdminDashboard = ({ setView }) => {
 
                 <div style={{ maxHeight: '150px', overflowY: 'scroll', marginBottom: '1rem' }}>
                     {users
-                        .filter((user) =>
+                        .filter((user) => {
+                            const isAlreadyInTeam = teams.some(team => team.members.includes(user.userId));
+                            return (
+                            !isAlreadyInTeam &&
                             user.name.toLowerCase().includes(teamSearchTerm)
-                        )
+                            );
+                        })
+
                         .map((user) => (
                             <label key={user.userId} style={{ display: 'block' }}>
                             <input
@@ -543,9 +548,17 @@ const AdminDashboard = ({ setView }) => {
 
                     <div style={{ maxHeight: '150px', overflowY: 'scroll', marginBottom: '1rem' }}>
                         {users
-                            .filter((user) =>
+                            .filter((user) => {
+                                const isInCurrentTeam = editingTeamMembers.includes(user.userId);
+                                const isInAnotherTeam = teams.some(
+                                team => team.id !== editingTeamId && team.members.includes(user.userId)
+                                );
+                                return (
+                                (isInCurrentTeam || !isInAnotherTeam) &&
                                 user.name.toLowerCase().includes(editSearchTerm)
-                            )
+                                );
+                            })
+
                             .map((user) => (
                                 <label key={user.userId} style={{ display: 'block' }}>
                                 <input
