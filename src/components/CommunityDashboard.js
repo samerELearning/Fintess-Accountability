@@ -19,6 +19,8 @@ const CommunityPage = ({ setView, setSelectedUserId }) => {
     const [globalProgress, setGlobalProgress] = useState([]);
     const [selectedRange, setSelectedRange] = useState('30d');
     const [summary, setSummary] = useState(null);
+    const [teams, setTeams] = useState([]);
+
 
 
 
@@ -199,6 +201,19 @@ const CommunityPage = ({ setView, setSelectedUserId }) => {
         return true; // all
         });
 
+        useEffect(() => {
+            const fetchTeams = async () => {
+                const snapshot = await getDocs(collection(db, 'teams'));
+                const list = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data(),
+                }));
+                setTeams(list);
+            };
+            fetchTeams();
+        }, [db]);
+
+
 
   return (
     <div className="dashboard-screen">
@@ -324,7 +339,42 @@ const CommunityPage = ({ setView, setSelectedUserId }) => {
                         />
                         </AreaChart>
                     </ResponsiveContainer>
-                </div>     
+                </div> 
+
+                <h2 className="dashboard-section-title">All Teams</h2>
+                <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
+                <div className="dashboard-table-wrapper">
+                    <table className="dashboard-table">
+                    <thead>
+                        <tr>
+                        <th>Team Name</th>
+                        <th>Members</th>
+                        <th>Created At</th>
+                        </tr>
+                    </thead>
+                    </table>
+
+                    <div className="dashboard-table-body scroll-hidden">
+                    <table className="dashboard-table">
+                        <tbody>
+                        {teams.map((team, index) => (
+                            <tr
+                            key={team.id}
+                            className="fade-in-row"
+                            style={{ animationDelay: `${index * 0.1}s` }}
+                            onClick={() => alert(`Open team profile for ${team.name}`)}
+                            >
+                            <td>{team.name}</td>
+                            <td>{team.members?.length ?? 0}</td>
+                            <td>{team.createdAt?.toDate?.().toLocaleDateString() ?? '-'}</td>
+                            </tr>
+                        ))}
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+                </div>
+   
 </div>
  );
 }
