@@ -27,14 +27,9 @@ const AdminDashboard = ({ setView }) => {
     const [pendingDeleteTeamId, setPendingDeleteTeamId] = useState(null);
     const [teamSearchTerm, setTeamSearchTerm] = useState('');
     const [editSearchTerm, setEditSearchTerm] = useState('');
+    const [loadingUsers, setLoadingUsers] = useState(true);
+
     
-
-
-
-
-
-
-
     const db = getFirestore();
 
     const deleteUser = async (userId) => {
@@ -86,6 +81,7 @@ const AdminDashboard = ({ setView }) => {
         fetchTeams();
 
         const fetchUsers = async () => {
+            setLoadingUsers(true);
             const userDocs = await getDocs(collection(db, 'user_names'));
             const usersData = [];
 
@@ -108,6 +104,7 @@ const AdminDashboard = ({ setView }) => {
                 ) {
                     miaCount++;
                 }
+                
             });
 
             // Helper to parse and generate week ranges
@@ -148,6 +145,7 @@ const AdminDashboard = ({ setView }) => {
         }
 
         setUsers(usersData);
+        setLoadingUsers(false);
         };
 
         fetchUsers();
@@ -214,6 +212,9 @@ const AdminDashboard = ({ setView }) => {
             />
         </div>
 
+        {loadingUsers ? (
+        <p className="dashboard-message">Loading users...</p>
+        ) : (
         <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
             <div className="dashboard-table-wrapper">
                 <table className="dashboard-table">
@@ -291,6 +292,7 @@ const AdminDashboard = ({ setView }) => {
                 </div>
             </div>
         </div>
+        )}
         {showDeleteConfirm && (
         <div className="popup-overlay">
             <div className="popup-box">

@@ -313,6 +313,12 @@ const Dashboard = ({ setView }) => {
   
   return (
     <div className="dashboard-screen">
+        <div className="community-button-container">
+          <button className="admin-button" onClick={() => setView('community')}>
+            Community
+          </button>
+        </div>
+
       {isAdmin && (
         <div className="admin-button-container">
           <button className="admin-button" onClick={() => setView('admin')}>
@@ -335,7 +341,7 @@ const Dashboard = ({ setView }) => {
         <>
           <input
             type="number"
-            placeholder="Goal Distance (km)"
+            placeholder="Goal Distance"
             value={goalDistance}
             onChange={(e) => setGoalDistance(e.target.value)}
             required
@@ -352,7 +358,7 @@ const Dashboard = ({ setView }) => {
         <>
           <input
             type="number"
-            placeholder="Actual Distance (km)"
+            placeholder="Actual Distance"
             value={actualDistance}
             onChange={(e) => setActualDistance(e.target.value)}
             required
@@ -477,9 +483,6 @@ const Dashboard = ({ setView }) => {
         </AreaChart>
       </ResponsiveContainer>
     </div>
-
-    
-
   </>
 ) : null}
 

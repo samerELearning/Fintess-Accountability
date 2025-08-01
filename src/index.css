@@ -422,6 +422,28 @@ body {
   box-shadow: 0 0 8px #00FF00;
 }
 
+.community-button-container {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+}
+
+.community-button {
+  background-color: transparent;
+  border: 1px solid #00ff00;
+  color: #00ff00;
+  padding: 0.4rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.community-button:hover {
+  background-color: #00ff00;
+  color: black;
+}
+
 
 @keyframes blink {
   50% { opacity: 0; }

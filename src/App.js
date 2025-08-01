@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import IntroScreen from './components/IntroScreen';
 import Dashboard from './components/Dashboard';
 import AdminDashboard from './components/AdminDashboard';
+import CommunityPage from './components/CommunityDashboard';
+
 
 const App = () => {
   const [introComplete, setIntroComplete] = useState(false);
@@ -12,13 +14,16 @@ const App = () => {
     <div className="min-h-screen bg-black text-[#00ff00]">
       {introComplete ? (
         view === 'admin' ? (
-          <AdminDashboard setView={setView}/>
+          <AdminDashboard setView={setView} />
+        ) : view === 'community' ? (
+          <CommunityPage setView={setView} />
         ) : (
           <Dashboard setView={setView} />
         )
       ) : (
         <IntroScreen onFinish={() => setIntroComplete(true)} />
       )}
+
     </div>
   );
 };
