@@ -444,6 +444,42 @@ body {
   color: black;
 }
 
+.summary-card-wrapper {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+}
+
+.weekly-summary-card {
+  background-color: black;
+  border: 2px solid #00ff00;
+  color: #00ff00;
+  padding: 1rem;
+  font-family: 'IBM Plex Mono', monospace;
+  text-align: left;
+  width: 250px;
+  box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+  border-radius: 8px;
+}
+
+.left-summary-card {
+  position: absolute;
+  top: 12rem;
+  left: 4rem;
+  z-index: 999;
+  background-color: black;
+  border: 2px solid #00ff00;
+  color: #00ff00;
+  padding: 1rem;
+  font-family: 'IBM Plex Mono', monospace;
+  width: 250px;
+  box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+  border-radius: 8px;
+}
+
+
+
 
 @keyframes blink {
   50% { opacity: 0; }

@@ -58,7 +58,7 @@ export const getWeekId = (date) => {
 const getCurrentWeekId = () => getWeekId(new Date());
 
 
-const Dashboard = ({ setView }) => {
+const Dashboard = ({ setView, setSelectedUserId }) => {
 
   const [userId, setUserId] = useState(null);
   const [goalDistance, setGoalDistance] = useState('');
@@ -474,12 +474,12 @@ const Dashboard = ({ setView }) => {
           <YAxis />
           <Tooltip />
           <Area
-      type="monotone"
-      dataKey="points"
-      stroke="#00FF00"
-      fill="#00FF00"
-      fillOpacity={0.2}
-    />
+            type="monotone"
+            dataKey="points"
+            stroke="#00FF00"
+            fill="#00FF00"
+            fillOpacity={0.2}
+          />
         </AreaChart>
       </ResponsiveContainer>
     </div>
@@ -525,7 +525,7 @@ const Dashboard = ({ setView }) => {
                     key={member.memberId}
                     className="fade-in-row"
                     style={{ animationDelay: `${index * 0.1}s` }}
-                    onClick={() => alert(`Open profile for ${member.name}`)}
+                    onClick={() => setSelectedUserId(member.memberId)}
                   >
                     <td>{member.name}</td>
                     <td>{member.goalDistance?.toFixed(1) ?? '-'}</td>

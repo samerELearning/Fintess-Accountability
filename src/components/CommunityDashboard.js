@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { getFirestore, collection, getDocs } from 'firebase/firestore';
+import { getFirestore, collection, getDocs, doc, getDoc } from 'firebase/firestore';
 import { getWeekId } from './Dashboard';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
@@ -7,7 +7,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 
 
-const CommunityPage = ({ setView }) => {
+const CommunityPage = ({ setView, setSelectedUserId }) => {
 
     const [users, setUsers] = useState([]);
     const db = getFirestore();
@@ -18,51 +18,55 @@ const CommunityPage = ({ setView }) => {
     const [loadingUsers, setLoadingUsers] = useState(true);
     const [globalProgress, setGlobalProgress] = useState([]);
     const [selectedRange, setSelectedRange] = useState('30d');
+    const [summary, setSummary] = useState(null);
 
 
-    const calculateGlobalProgress = async () => {
-    const db = getFirestore();
-    const userDocs = await getDocs(collection(db, 'user_names'));
 
-    const weekStats = {}; // { weekId: { totalPoints, count } }
 
-    for (const userDoc of userDocs.docs) {
-        const userId = userDoc.id;
-        const weeklyRef = collection(db, `artifacts/default-fitness-app/users/${userId}/weekly_distances`);
-        const weeklySnapshot = await getDocs(weeklyRef);
+    useEffect(() => {
+        const calculateGlobalProgress = async () => {
+            const userDocs = await getDocs(collection(db, 'user_names'));
+            const weekStats = {}; // ✅ now defined
 
-        weeklySnapshot.forEach(doc => {
-        const data = doc.data();
-        const weekId = doc.id;
+            for (const userDoc of userDocs.docs) {
+            const userId = userDoc.id;
+            const weeklyRef = collection(db, `artifacts/default-fitness-app/users/${userId}/weekly_distances`);
+            const weeklySnapshot = await getDocs(weeklyRef);
 
-        if (data.actualDistance != null || data.actualReps != null) {
-            const points = (data.actualDistance || 0) + (data.actualReps || 0) / 20;
+            weeklySnapshot.forEach(doc => {
+                const data = doc.data();
+                const weekId = doc.id;
 
-            if (!weekStats[weekId]) {
-            weekStats[weekId] = { totalPoints: 0, count: 0 };
+                if (data.actualDistance != null || data.actualReps != null) {
+                const points = (data.actualDistance || 0) + (data.actualReps || 0) / 20;
+
+                if (!weekStats[weekId]) {
+                    weekStats[weekId] = { totalPoints: 0, count: 0 };
+                }
+
+                weekStats[weekId].totalPoints += points;
+                weekStats[weekId].count += 1;
+                }
+            });
             }
 
-            weekStats[weekId].totalPoints += points;
-            weekStats[weekId].count += 1;
-        }
-        });
-    }
+            const progressArray = Object.entries(weekStats)
+            .map(([weekId, { totalPoints, count }]) => ({
+                weekId,
+                points: count > 0 ? parseFloat((totalPoints / count).toFixed(1)) : 0,
+            }))
+            .sort((a, b) => {
+                const aNum = parseInt(a.weekId.split('-')[1]);
+                const bNum = parseInt(b.weekId.split('-')[1]);
+                return aNum - bNum;
+            });
 
-    const progressArray = Object.entries(weekStats)
-        .map(([weekId, { totalPoints, count }]) => ({
-        weekId,
-        points: count > 0 ? parseFloat((totalPoints / count).toFixed(1)) : 0,
-        }))
-        .sort((a, b) => {
-        const aNum = parseInt(a.weekId.split('-')[1]);
-        const bNum = parseInt(b.weekId.split('-')[1]);
-        return aNum - bNum;
-        });
+            setGlobalProgress(progressArray);
+        };
 
-    setGlobalProgress(progressArray);
-    };
+        calculateGlobalProgress();
+        }, [db]);
 
-    calculateGlobalProgress();
 
 
     useEffect(() => {
@@ -102,6 +106,72 @@ const CommunityPage = ({ setView }) => {
         fetchUsers();
         }, []);
 
+        useEffect(() => {
+            const calculateWeeklySummary = async () => {
+                const userDocs = await getDocs(collection(db, 'user_names'));
+                const currentWeekId = getWeekId(new Date());
+                const [year, week] = currentWeekId.split('-W').map(Number);
+
+                const previousWeekId = week > 1
+                ? `${year}-W${String(week - 1).padStart(2, '0')}`
+                : `${year - 1}-W52`;
+
+                let totalGoalDistance = 0;
+                let totalGoalReps = 0;
+                let totalActualDistance = 0;
+                let totalActualReps = 0;
+                let miaCount = 0;
+
+                for (const userDoc of userDocs.docs) {
+                const userId = userDoc.id; // ✅ declared here
+
+                const weekDocRef = doc(db, `artifacts/default-fitness-app/users/${userId}/weekly_distances/${previousWeekId}`);
+                const weekSnap = await getDoc(weekDocRef);
+
+                if (weekSnap.exists()) {
+                    const data = weekSnap.data();
+                    const hadGoal = data.goalDistance || data.goalReps;
+                    const hadNoActuals = data.actualDistance == null && data.actualReps == null;
+
+                    if (hadGoal) {
+                    totalGoalDistance += data.goalDistance || 0;
+                    totalGoalReps += data.goalReps || 0;
+                    }
+
+                    if (hadGoal && hadNoActuals) {
+                    miaCount++;
+                    }
+
+                    totalActualDistance += data.actualDistance || 0;
+                    totalActualReps += data.actualReps || 0;
+                } else {
+                    miaCount++;
+                }
+                }
+
+                const totalGoalPoints = totalGoalDistance + totalGoalReps / 20;
+                const totalActualPoints = totalActualDistance + totalActualReps / 20;
+                const resultPercentage = totalGoalPoints > 0
+                ? ((totalActualPoints - totalGoalPoints) / totalGoalPoints) * 100
+                : 0;
+
+                const status = resultPercentage >= 0 ? 'Surplus' : 'Deficiency';
+
+                setSummary({
+                previousWeekId,
+                totalGoalPoints,
+                totalActualPoints,
+                resultPercentage,
+                status,
+                miaCount
+                });
+            };
+
+            calculateWeeklySummary();
+            }, []);
+
+
+
         const getDaysAgo = (days) => {
         const now = new Date();
         now.setDate(now.getDate() - days);
@@ -137,7 +207,15 @@ const CommunityPage = ({ setView }) => {
             ← Back to Dashboard
             </button>
         </div>
-
+        {summary && (
+                    <div className="left-summary-card">
+                        <h3>Week {summary.previousWeekId.split('-W')[1]} Summary</h3>
+                        <p><strong>Goal:</strong> {summary.totalGoalPoints.toFixed(1)} points</p>
+                        <p><strong>Actual:</strong> {summary.totalActualPoints.toFixed(1)} points</p>
+                        <p><strong>{summary.status}:</strong> {Math.abs(summary.resultPercentage).toFixed(1)}%</p>
+                        <p><strong>MIA:</strong> {summary.miaCount} users</p>
+                    </div>
+                )}
         <h1 className="dashboard-title">GLOBAL COMMUNITY</h1>
                 <div className="admin-filters">
                     <input
@@ -203,7 +281,7 @@ const CommunityPage = ({ setView }) => {
                                         key={user.userId}
                                         className="fade-in-row"
                                         style={{ animationDelay: `${index * 0.1}s` }}
-                                        onClick={() => alert(`Open profile for ${user.name}`)}
+                                        onClick={() => setSelectedUserId(user.userId)}
                                         >
                                         <td>{user.name}</td>
                                         <td>{user.joinedAt?.toDate().toLocaleDateString() ?? '-'}</td>
@@ -246,9 +324,7 @@ const CommunityPage = ({ setView }) => {
                         />
                         </AreaChart>
                     </ResponsiveContainer>
-                    </div>
-
-        
+                </div>     
 </div>
  );
 }

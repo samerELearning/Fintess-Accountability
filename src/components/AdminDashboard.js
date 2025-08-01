@@ -5,7 +5,7 @@ import { getWeekId } from './Dashboard';
 
 
 
-const AdminDashboard = ({ setView }) => {
+const AdminDashboard = ({ setView, setSelectedUserId }) => {
     const [users, setUsers] = useState([]);
     const [searchName, setSearchName] = useState('');
     const [miaFilter, setMiaFilter] = useState('');
@@ -252,7 +252,7 @@ const AdminDashboard = ({ setView }) => {
                             key={user.userId}
                             className="fade-in-row"
                             style={{ animationDelay: `${index * 0.1}s` }}
-                            onClick={() => alert(`Open profile for ${user.name}`)}
+                            onClick={() => setSelectedUserId(user.userId)}
                             >
                             <td>{user.name}</td>
                             <td>{user.joinedAt?.toDate().toLocaleDateString() ?? '-'}</td>
