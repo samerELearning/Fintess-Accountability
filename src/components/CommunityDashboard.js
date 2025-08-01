@@ -7,7 +7,7 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 
 
 
-const CommunityPage = ({ setView, setSelectedUserId }) => {
+const CommunityPage = ({ setView, setSelectedUserId, setSelectedTeamId }) => {
 
     const [users, setUsers] = useState([]);
     const db = getFirestore();
@@ -362,7 +362,7 @@ const CommunityPage = ({ setView, setSelectedUserId }) => {
                             key={team.id}
                             className="fade-in-row"
                             style={{ animationDelay: `${index * 0.1}s` }}
-                            onClick={() => alert(`Open team profile for ${team.name}`)}
+                            onClick={() => setSelectedTeamId(team.id)}
                             >
                             <td>{team.name}</td>
                             <td>{team.members?.length ?? 0}</td>

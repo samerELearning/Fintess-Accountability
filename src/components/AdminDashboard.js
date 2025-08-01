@@ -5,7 +5,7 @@ import { getWeekId } from './Dashboard';
 
 
 
-const AdminDashboard = ({ setView, setSelectedUserId }) => {
+const AdminDashboard = ({ setView, setSelectedUserId, setSelectedTeamId }) => {
     const [users, setUsers] = useState([]);
     const [searchName, setSearchName] = useState('');
     const [miaFilter, setMiaFilter] = useState('');
@@ -397,7 +397,7 @@ const AdminDashboard = ({ setView, setSelectedUserId }) => {
                         key={team.id}
                         className="fade-in-row"
                         style={{ animationDelay: `${index * 0.1}s` }}
-                        onClick={() => alert(`Open team profile for ${team.name}`)}
+                        onClick={() => setSelectedTeamId(team.id)}
                         >
                         <td>{team.name}</td>
                         <td>{team.members.length}</td>
