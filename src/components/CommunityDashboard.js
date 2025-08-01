@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { getFirestore, collection, getDocs } from 'firebase/firestore';
 import { getWeekId } from './Dashboard';
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+
+
 
 
 
@@ -13,6 +16,54 @@ const CommunityPage = ({ setView }) => {
     const [statusFilter, setStatusFilter] = useState('');
     const [joinedDateFilter, setJoinedDateFilter] = useState('');
     const [loadingUsers, setLoadingUsers] = useState(true);
+    const [globalProgress, setGlobalProgress] = useState([]);
+    const [selectedRange, setSelectedRange] = useState('30d');
+
+
+    const calculateGlobalProgress = async () => {
+    const db = getFirestore();
+    const userDocs = await getDocs(collection(db, 'user_names'));
+
+    const weekStats = {}; // { weekId: { totalPoints, count } }
+
+    for (const userDoc of userDocs.docs) {
+        const userId = userDoc.id;
+        const weeklyRef = collection(db, `artifacts/default-fitness-app/users/${userId}/weekly_distances`);
+        const weeklySnapshot = await getDocs(weeklyRef);
+
+        weeklySnapshot.forEach(doc => {
+        const data = doc.data();
+        const weekId = doc.id;
+
+        if (data.actualDistance != null || data.actualReps != null) {
+            const points = (data.actualDistance || 0) + (data.actualReps || 0) / 20;
+
+            if (!weekStats[weekId]) {
+            weekStats[weekId] = { totalPoints: 0, count: 0 };
+            }
+
+            weekStats[weekId].totalPoints += points;
+            weekStats[weekId].count += 1;
+        }
+        });
+    }
+
+    const progressArray = Object.entries(weekStats)
+        .map(([weekId, { totalPoints, count }]) => ({
+        weekId,
+        points: count > 0 ? parseFloat((totalPoints / count).toFixed(1)) : 0,
+        }))
+        .sort((a, b) => {
+        const aNum = parseInt(a.weekId.split('-')[1]);
+        const bNum = parseInt(b.weekId.split('-')[1]);
+        return aNum - bNum;
+        });
+
+    setGlobalProgress(progressArray);
+    };
+
+    calculateGlobalProgress();
+
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -51,94 +102,153 @@ const CommunityPage = ({ setView }) => {
         fetchUsers();
         }, []);
 
+        const getDaysAgo = (days) => {
+        const now = new Date();
+        now.setDate(now.getDate() - days);
+        return now;
+        };
+
+        const currentWeek = getWeekId(new Date());
+
+        const filteredData = globalProgress.filter((entry) => {
+        const [year, week] = entry.weekId.split('-W').map(Number);
+
+        const getWeekDifference = (current, past) => {
+            return (current.year - past.year) * 52 + (current.week - past.week);
+        };
+
+        const currentSplit = currentWeek.split('-W').map(Number);
+        const diff = getWeekDifference(
+            { year: currentSplit[0], week: currentSplit[1] },
+            { year, week }
+        );
+
+        if (selectedRange === '30d') return diff <= 4;
+        if (selectedRange === '90d') return diff <= 12;
+        if (selectedRange === '1y') return diff <= 52;
+        return true; // all
+        });
+
 
   return (
     <div className="dashboard-screen">
-  <div className="admin-back-button-container">
-    <button className="admin-button" onClick={() => setView('dashboard')}>
-      ← Back to Dashboard
-    </button>
-  </div>
-
-  <h1 className="dashboard-title">COMMUNITY</h1>
-        <div className="admin-filters">
-            <input
-                type="text"
-                placeholder="Search by name"
-                value={searchName}
-                onChange={(e) => setSearchName(e.target.value.toLowerCase())}
-            />
-            <input
-                type="number"
-                placeholder="MIA count"
-                value={miaFilter}
-                onChange={(e) => setMiaFilter(e.target.value)}
-            />
-            <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
-                <option value="">All</option>
-                <option value="active">Active</option>
-                <option value="blocked">Blocked</option>
-            </select>
-            <input
-                type="date"
-                value={joinedDateFilter}
-                onChange={(e) => setJoinedDateFilter(e.target.value)}
-            />
+        <div className="admin-back-button-container">
+            <button className="admin-button" onClick={() => setView('dashboard')}>
+            ← Back to Dashboard
+            </button>
         </div>
 
-        {loadingUsers ? (
-        <p className="dashboard-message">Loading users...</p>
-        ) : (
-        <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
-            <div className="dashboard-table-wrapper">
-                <table className="dashboard-table">
-                    <thead>
-                        <tr>
-                        <th>Name</th>
-                        <th>Joined</th>
-                        <th>MIA Count</th>
-                        <th>Status</th>
-                        </tr>
-                    </thead>
-                </table>
-
-                <div className="dashboard-table-body scroll-hidden">
-                    <table className="dashboard-table">
-                        <tbody>
-                        {users
-                        .filter((user) => {
-                            const matchName = searchName === '' || user.name.toLowerCase().includes(searchName);
-                            const matchMIA = miaFilter === '' || user.miaCount === parseInt(miaFilter);
-                            const matchStatus =
-                            statusFilter === '' ||
-                            (statusFilter === 'active' && !user.isBlocked) ||
-                            (statusFilter === 'blocked' && user.isBlocked);
-                            const matchDate =
-                            joinedDateFilter === '' ||
-                            user.joinedAt?.toDate().toISOString().split('T')[0] === joinedDateFilter;
-
-                            return matchName && matchMIA && matchStatus && matchDate;
-                        })
-                        .map((user, index) => (
-
-                            <tr
-                                key={user.userId}
-                                className="fade-in-row"
-                                style={{ animationDelay: `${index * 0.1}s` }}
-                                onClick={() => alert(`Open profile for ${user.name}`)}
-                                >
-                                <td>{user.name}</td>
-                                <td>{user.joinedAt?.toDate().toLocaleDateString() ?? '-'}</td>
-                                <td>{user.miaCount}</td>
-                                <td>{user.isBlocked ? 'Blocked' : 'Active'}</td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
+        <h1 className="dashboard-title">GLOBAL COMMUNITY</h1>
+                <div className="admin-filters">
+                    <input
+                        type="text"
+                        placeholder="Search by name"
+                        value={searchName}
+                        onChange={(e) => setSearchName(e.target.value.toLowerCase())}
+                    />
+                    <input
+                        type="number"
+                        placeholder="MIA count"
+                        value={miaFilter}
+                        onChange={(e) => setMiaFilter(e.target.value)}
+                    />
+                    <select value={statusFilter} onChange={(e) => setStatusFilter(e.target.value)}>
+                        <option value="">All</option>
+                        <option value="active">Active</option>
+                        <option value="blocked">Blocked</option>
+                    </select>
+                    <input
+                        type="date"
+                        value={joinedDateFilter}
+                        onChange={(e) => setJoinedDateFilter(e.target.value)}
+                    />
                 </div>
-            </div>
-        </div>
-  )}
+
+                {loadingUsers ? (
+                <p className="dashboard-message">Loading users...</p>
+                ) : (
+                <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
+                    <div className="dashboard-table-wrapper">
+                        <table className="dashboard-table">
+                            <thead>
+                                <tr>
+                                <th>Name</th>
+                                <th>Joined</th>
+                                <th>MIA Count</th>
+                                <th>Status</th>
+                                </tr>
+                            </thead>
+                        </table>
+
+                        <div className="dashboard-table-body scroll-hidden">
+                            <table className="dashboard-table">
+                                <tbody>
+                                {users
+                                .filter((user) => {
+                                    const matchName = searchName === '' || user.name.toLowerCase().includes(searchName);
+                                    const matchMIA = miaFilter === '' || user.miaCount === parseInt(miaFilter);
+                                    const matchStatus =
+                                    statusFilter === '' ||
+                                    (statusFilter === 'active' && !user.isBlocked) ||
+                                    (statusFilter === 'blocked' && user.isBlocked);
+                                    const matchDate =
+                                    joinedDateFilter === '' ||
+                                    user.joinedAt?.toDate().toISOString().split('T')[0] === joinedDateFilter;
+
+                                    return matchName && matchMIA && matchStatus && matchDate;
+                                })
+                                .map((user, index) => (
+
+                                    <tr
+                                        key={user.userId}
+                                        className="fade-in-row"
+                                        style={{ animationDelay: `${index * 0.1}s` }}
+                                        onClick={() => alert(`Open profile for ${user.name}`)}
+                                        >
+                                        <td>{user.name}</td>
+                                        <td>{user.joinedAt?.toDate().toLocaleDateString() ?? '-'}</td>
+                                        <td>{user.miaCount}</td>
+                                        <td>{user.isBlocked ? 'Blocked' : 'Active'}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                )}
+
+                <div className="dashboard-graph-section">
+                    <h2 className="dashboard-section-title">GLOBAL PROGRESS CURVE</h2>
+                    <div className="graph-controls">
+                        {['30d', '90d', '1y', 'all'].map((range) => (
+                        <button
+                            key={range}
+                            className={`graph-button ${selectedRange === range ? 'active' : ''}`}
+                            onClick={() => setSelectedRange(range)}
+                        >
+                            {range === '30d' ? '30 Days' : range === '90d' ? '90 Days' : range === '1y' ? '1 Year' : 'All Time'}
+                        </button>
+                        ))}
+                    </div>
+
+                    <ResponsiveContainer width="100%" height={300}>
+                        <AreaChart data={filteredData}>
+                        <XAxis dataKey="weekId" />
+                        <YAxis />
+                        <Tooltip />
+                        <Area
+                            type="monotone"
+                            dataKey="points"
+                            stroke="#00FF00"
+                            fill="#00FF00"
+                            fillOpacity={0.2}
+                        />
+                        </AreaChart>
+                    </ResponsiveContainer>
+                    </div>
+
+        
 </div>
  );
 }
