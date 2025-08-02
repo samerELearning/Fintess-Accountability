@@ -598,8 +598,8 @@ input[type=number] {
   .dashboard-graph-section {
     padding-left: 0.2rem;
     padding-right: 0.2rem;
-    width: 105%; /* makes it slightly wider */
-    margin-left: -2.5%;
+    width: 115%; /* makes it slightly wider */
+    margin-left: -3%;
   }
 
   .dashboard-section-title {
