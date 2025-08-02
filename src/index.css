@@ -607,13 +607,21 @@ input[type=number] {
 }
 
 .left-summary-card {
-  position: fixed !important;
-  bottom: 0.5rem;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 90%;
-  max-width: 300px;
-  z-index: 1000;
+  border: 2px solid #00ff00;
+  background-color: black;
+  color: #00ff00;
+  font-family: 'IBM Plex Mono', monospace;
+  box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+  border-radius: 8px;
+}
+
+.admin-user-table td button {
+  font-size: 0.7rem;
+  padding: 0.2rem 0.4rem;
+  white-space: nowrap;
+  min-width: auto;
+  display: inline-block;
+  margin: 0 2px;
 }
 
 }
