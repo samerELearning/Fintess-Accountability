@@ -557,12 +557,7 @@ input[type=number] {
     padding: 0.5rem;
   }
 
-  /* History and team tables */
-  .dashboard-table-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    padding: 0 0.5rem;
-  }
+
   
  .dashboard-table {
   width: 100%;
