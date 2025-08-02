@@ -564,19 +564,20 @@ input[type=number] {
     padding: 0 0.5rem;
   }
 
-  .dashboard-table {
+ .dashboard-table {
   width: 100%;
   table-layout: fixed;
   word-wrap: break-word;
-  font-size: 0.75rem;
+  font-size: 0.65rem; /* Smaller font */
 }
 
 .dashboard-table th,
 .dashboard-table td {
-  padding: 0.25rem;
+  padding: 0.2rem 0.3rem; /* Tighter padding */
   text-align: center;
   word-break: break-word;
 }
+
 
 
   /* Graph buttons */
