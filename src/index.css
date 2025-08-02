@@ -486,6 +486,12 @@ body {
   display: none;
 }
 
+body, .dashboard-table-body {
+  -webkit-overflow-scrolling: auto !important;
+  overscroll-behavior: none !important;
+  touch-action: pan-y; /* only vertical scrolling */
+}
+
 
 @keyframes blink {
   50% { opacity: 0; }
