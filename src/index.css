@@ -615,7 +615,7 @@ input[type=number] {
   }
 
   .team-table {
-  font-size: 0.55rem;
+  font-size: 0.45rem;
 }
 
 .left-summary-card {
@@ -653,6 +653,14 @@ input[type=number] {
     width: 90%;
     max-width: 300px;
     position: static;
+  }
+
+  .typewriter-container h1 {
+    font-size: 1.25rem;
+    line-height: 1.5;
+    text-align: center;
+    white-space: normal;
+    word-break: break-word;
   }
 
 }

@@ -162,6 +162,7 @@ return (
       </button>
     ) : (
       <>
+      <div className="typewriter-container">
         <h1>{text}<span className="cursor">█</span></h1>
 
         {showInput && (
@@ -201,6 +202,7 @@ return (
             Proceed
           </button>
         )}
+        </div>
       </>
     )}
     {showBlockPopup && (
