@@ -526,7 +526,17 @@ input[type=number] {
     width: 100%;
     font-size: 1rem;
     padding: 0.6rem;
+  
   }
+
+  .dashboard-form input {
+  box-sizing: border-box;
+}
+
+.dashboard-form button {
+  text-align: center;
+}
+
 
   /* Responsive titles */
   .dashboard-title {
@@ -539,6 +549,7 @@ input[type=number] {
     font-size: 1rem;
     text-align: center;
     margin-top: 1.5rem;
+    margin-top: 2rem;
   }
 
   /* Center top buttons */
@@ -559,6 +570,7 @@ input[type=number] {
   /* Ensure tables scroll if overflowed */
   .dashboard-table-wrapper {
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .dashboard-table {
