@@ -21,7 +21,7 @@ const getGreeting = (name) => {
   }
 
   // Append the name if available, otherwise default to "soldier"
-  return `${baseGreeting} ${name || "soldier"}!`;
+  return `${baseGreeting} ${name || "brother"}!`;
 };
 
 
