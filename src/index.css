@@ -565,8 +565,19 @@ input[type=number] {
   }
 
   .dashboard-table {
-    min-width: 600px;
-  }
+  width: 100%;
+  table-layout: fixed;
+  word-wrap: break-word;
+  font-size: 0.75rem;
+}
+
+.dashboard-table th,
+.dashboard-table td {
+  padding: 0.25rem;
+  text-align: center;
+  word-break: break-word;
+}
+
 
   /* Graph buttons */
   .graph-controls {
