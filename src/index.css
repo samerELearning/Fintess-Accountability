@@ -246,13 +246,14 @@ body {
 
 .dashboard-table-body {
   max-height: 250px;
-  overflow-y: scroll;
+  overflow-y: auto;
   display: block;
+  overscroll-behavior: contain;
 }
 
 .dashboard-table-body table {
   width: 100%;
-  border-collapse: collapse;
+  table-layout: fixed;
 }
 
 .dashboard-table thead,
