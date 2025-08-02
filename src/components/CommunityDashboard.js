@@ -252,6 +252,7 @@ const CommunityPage = ({ setView, setSelectedUserId, setSelectedTeamId }) => {
                     </select>
                     <input
                         type="date"
+                        placeholder="Joined At"
                         value={joinedDateFilter}
                         onChange={(e) => setJoinedDateFilter(e.target.value)}
                     />
