@@ -478,7 +478,12 @@ body {
   border-radius: 8px;
 }
 
-
+.desktop-only {
+  display: block;
+}
+.mobile-only {
+  display: none;
+}
 
 
 @keyframes blink {
@@ -623,6 +628,19 @@ input[type=number] {
   display: inline-block;
   margin: 0 2px;
 }
+
+.desktop-only {
+    display: none;
+  }
+  .mobile-only {
+    display: block;
+    margin-top: 2rem;
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
+    max-width: 300px;
+    position: static;
+  }
 
 }
 

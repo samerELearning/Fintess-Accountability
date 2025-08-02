@@ -223,7 +223,7 @@ const CommunityPage = ({ setView, setSelectedUserId, setSelectedTeamId }) => {
             </button>
         </div>
         {summary && (
-                    <div className="left-summary-card">
+                    <div className="left-summary-card desktop-only">
                         <h3>Week {summary.previousWeekId.split('-W')[1]} Summary</h3>
                         <p><strong>Goal:</strong> {summary.totalGoalPoints.toFixed(1)} points</p>
                         <p><strong>Actual:</strong> {summary.totalActualPoints.toFixed(1)} points</p>
@@ -343,37 +343,48 @@ const CommunityPage = ({ setView, setSelectedUserId, setSelectedTeamId }) => {
 
                 <h2 className="dashboard-section-title">All Teams</h2>
                 <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
-                <div className="dashboard-table-wrapper">
-                    <table className="dashboard-table">
-                    <thead>
-                        <tr>
-                        <th>Team Name</th>
-                        <th>Members</th>
-                        <th>Created At</th>
-                        </tr>
-                    </thead>
-                    </table>
+                    <div className="dashboard-table-wrapper">
+                        <table className="dashboard-table">
+                            <thead>
+                                <tr>
+                                <th>Team Name</th>
+                                <th>Members</th>
+                                <th>Created At</th>
+                                </tr>
+                            </thead>
+                        </table>
 
-                    <div className="dashboard-table-body scroll-hidden">
-                    <table className="dashboard-table">
-                        <tbody>
-                        {teams.map((team, index) => (
-                            <tr
-                            key={team.id}
-                            className="fade-in-row"
-                            style={{ animationDelay: `${index * 0.1}s` }}
-                            onClick={() => setSelectedTeamId(team.id)}
-                            >
-                            <td>{team.name}</td>
-                            <td>{team.members?.length ?? 0}</td>
-                            <td>{team.createdAt?.toDate?.().toLocaleDateString() ?? '-'}</td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
+                        <div className="dashboard-table-body scroll-hidden">
+                            <table className="dashboard-table">
+                                <tbody>
+                                {teams.map((team, index) => (
+                                    <tr
+                                    key={team.id}
+                                    className="fade-in-row"
+                                    style={{ animationDelay: `${index * 0.1}s` }}
+                                    onClick={() => setSelectedTeamId(team.id)}
+                                    >
+                                        <td>{team.name}</td>
+                                        <td>{team.members?.length ?? 0}</td>
+                                        <td>{team.createdAt?.toDate?.().toLocaleDateString() ?? '-'}</td>
+                                    </tr>
+                                ))}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
-                </div>
+
+                
+                    {summary && (
+                    <div className="left-summary-card mobile-only">
+                        <h3>Week {summary.previousWeekId.split('-W')[1]} Summary</h3>
+                        <p><strong>Goal:</strong> {summary.totalGoalPoints.toFixed(1)} points</p>
+                        <p><strong>Actual:</strong> {summary.totalActualPoints.toFixed(1)} points</p>
+                        <p><strong>{summary.status}:</strong> {Math.abs(summary.resultPercentage).toFixed(1)}%</p>
+                        <p><strong>MIA:</strong> {summary.miaCount} users</p>
+                    </div>
+                    )}
    
 </div>
  );
