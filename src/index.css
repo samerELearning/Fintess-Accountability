@@ -601,6 +601,21 @@ input[type=number] {
     font-size: 1rem;
     margin-top: 2rem;
   }
+
+  .team-table {
+  font-size: 0.55rem;
+}
+
+.left-summary-card {
+  position: fixed !important;
+  bottom: 0.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 300px;
+  z-index: 1000;
+}
+
 }
 
 /* Desktop-safe fallbacks */
