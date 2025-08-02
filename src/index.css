@@ -564,11 +564,20 @@ input[type=number] {
     padding: 0 0.5rem;
   }
 
+  .dashboard-table-wrapper > table:first-child {
+  border-bottom: none;
+}
+
+.dashboard-table-wrapper > .dashboard-table-body table {
+  border-top: none;
+}
+
  .dashboard-table {
   width: 100%;
   table-layout: fixed;
   word-wrap: break-word;
   font-size: 0.65rem; /* Smaller font */
+  border-collapse: collapse;
 }
 
 .dashboard-table th,
@@ -576,6 +585,7 @@ input[type=number] {
   padding: 0.2rem 0.3rem; /* Tighter padding */
   text-align: center;
   word-break: break-word;
+  border: 1px solid #ccc;
 }
 
 
