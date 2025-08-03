@@ -510,7 +510,7 @@ const Dashboard = ({ setView, setSelectedUserId }) => {
         </table>
 
         <div className="dashboard-table-body scroll-hidden">
-          <table className="dashboard-table">
+          <table className="dashboard-table team-table">
             <tbody>
               {teamStats
                 .filter((member) => member.memberId !== userId)
