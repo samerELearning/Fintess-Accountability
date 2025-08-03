@@ -326,20 +326,22 @@ const CommunityPage = ({ setView, setSelectedUserId, setSelectedTeamId }) => {
                         ))}
                     </div>
 
-                    <ResponsiveContainer width="100%" height={300}>
-                        <AreaChart data={filteredData}>
-                        <XAxis dataKey="weekId" />
-                        <YAxis />
-                        <Tooltip />
-                        <Area
-                            type="monotone"
-                            dataKey="points"
-                            stroke="#00FF00"
-                            fill="#00FF00"
-                            fillOpacity={0.2}
-                        />
-                        </AreaChart>
-                    </ResponsiveContainer>
+                    <div className="left-shift-chart">
+                        <ResponsiveContainer width="100%" height={300}>
+                            <AreaChart data={filteredData}>
+                            <XAxis dataKey="weekId" />
+                            <YAxis />
+                            <Tooltip />
+                            <Area
+                                type="monotone"
+                                dataKey="points"
+                                stroke="#00FF00"
+                                fill="#00FF00"
+                                fillOpacity={0.2}
+                            />
+                            </AreaChart>
+                        </ResponsiveContainer>
+                    </div>
                 </div> 
 
                 <h2 className="dashboard-section-title">All Teams</h2>

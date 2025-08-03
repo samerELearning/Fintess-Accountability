@@ -141,28 +141,30 @@ const TeamProfile = ({ teamId, onBack, setSelectedUserId }) => {
           ))}
         </div>
 
-        <ResponsiveContainer width="100%" height={300}>
-          <AreaChart data={aggregateByWeek().filter(entry => {
-            const [year, week] = entry.name.split('-W').map(Number);
-            const [cy, cw] = getCurrentWeek.split('-W').map(Number);
-            const diff = (cy - year) * 52 + (cw - week);
-            if (selectedRange === '30d') return diff <= 4;
-            if (selectedRange === '90d') return diff <= 12;
-            if (selectedRange === '1y') return diff <= 52;
-            return true;
-          })}>
-            <XAxis dataKey="name" />
-            <YAxis />
-            <Tooltip />
-            <Area
-              type="monotone"
-              dataKey="points"
-              stroke="#00FF00"
-              fill="#00FF00"
-              fillOpacity={0.2}
-            />
-          </AreaChart>
-        </ResponsiveContainer>
+        <div className="left-shift-chart">
+          <ResponsiveContainer width="100%" height={300}>
+            <AreaChart data={aggregateByWeek().filter(entry => {
+              const [year, week] = entry.name.split('-W').map(Number);
+              const [cy, cw] = getCurrentWeek.split('-W').map(Number);
+              const diff = (cy - year) * 52 + (cw - week);
+              if (selectedRange === '30d') return diff <= 4;
+              if (selectedRange === '90d') return diff <= 12;
+              if (selectedRange === '1y') return diff <= 52;
+              return true;
+            })}>
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Area
+                type="monotone"
+                dataKey="points"
+                stroke="#00FF00"
+                fill="#00FF00"
+                fillOpacity={0.2}
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        </div>
       </div>
     </div>
   );
