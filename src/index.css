@@ -637,7 +637,7 @@ input[type=number] {
 }
 
 
-.admin-user-table td button {
+.admin-action-button {
   font-size: 0.7rem;
   padding: 0.3rem 0.5rem;
   white-space: nowrap;
