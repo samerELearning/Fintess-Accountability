@@ -305,13 +305,14 @@ const Dashboard = ({ setView, setSelectedUserId }) => {
     return new Date(now.setDate(now.getDate() - days));
   };
 
-  const filteredData = weeklyEntries.filter(entry => {
-    const entryDate = entry.timestamp?.toDate?.();
-    return entryDate && entryDate >= calculateDateFromRange(selectedRange);
-  }).map(entry => ({
-    name: entry.weekId,
-    points: entry.totalPoints,
-  }));
+  const filteredData = weeklyEntries
+  .filter(e => e.timestamp?.toDate?.() >= calculateDateFromRange(selectedRange))
+  .map(e => ({ name: e.weekId, points: e.totalPoints }))
+  .sort((a, b) => {
+    const [ay, aw] = a.name.split('-W').map(Number);
+    const [by, bw] = b.name.split('-W').map(Number);
+    return ay !== by ? ay - by : aw - bw;
+  });
 
   
   return (

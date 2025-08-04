@@ -34,7 +34,7 @@ const TeamProfile = ({ teamId, onBack, setSelectedUserId }) => {
           const d = doc.data();
           const points = (d.actualDistance || 0) + ((d.actualReps || 0) / 20);
           const weekId = doc.id;
-          allEntries.push({ weekId, points });
+          allEntries.push({ weekId, totalPoints: points });
         });
       }
       setMembers(memberData);
@@ -57,24 +57,27 @@ const TeamProfile = ({ teamId, onBack, setSelectedUserId }) => {
     return new Date(now.setDate(now.getDate() - days));
   };
 
-  const aggregateByWeek = () => {
-    const weekMap = {};
-    weeklyEntries.forEach(({ weekId, points }) => {
-      if (!weekMap[weekId]) weekMap[weekId] = { weekId, total: 0, count: 0 };
-      weekMap[weekId].total += points;
-      weekMap[weekId].count += 1;
+  const aggregateByWeek = (entries) => {
+  const weekMap = {};
+  for (const e of entries) {
+    if (!weekMap[e.weekId]) {
+      weekMap[e.weekId] = { weekId: e.weekId, total: 0, count: 0 };
+    }
+    weekMap[e.weekId].total += e.totalPoints;
+    weekMap[e.weekId].count++;
+  }
+
+  return Object.values(weekMap)
+    .map(({ weekId, total, count }) => ({
+      name: weekId,
+      points: count ? parseFloat((total / count).toFixed(1)) : 0,
+    }))
+    .sort((a, b) => {
+      const [ay, aw] = a.name.split('-W').map(Number);
+      const [by, bw] = b.name.split('-W').map(Number);
+      return ay !== by ? ay - by : aw - bw;
     });
-    return Object.values(weekMap)
-      .map(({ weekId, total, count }) => ({
-        name: weekId,
-        points: count ? parseFloat((total / count).toFixed(1)) : 0,
-      }))
-      .sort((a, b) => {
-        const aNum = parseInt(a.name.split('-')[1]);
-        const bNum = parseInt(b.name.split('-')[1]);
-        return aNum - bNum;
-      });
-  };
+};
 
   return (
     <div className="dashboard-screen">
@@ -143,7 +146,7 @@ const TeamProfile = ({ teamId, onBack, setSelectedUserId }) => {
 
         <div className="left-shift-chart">
           <ResponsiveContainer width="100%" height={300}>
-            <AreaChart data={aggregateByWeek().filter(entry => {
+            <AreaChart data={aggregateByWeek(weeklyEntries).filter(entry => {
               const [year, week] = entry.name.split('-W').map(Number);
               const [cy, cw] = getCurrentWeek.split('-W').map(Number);
               const diff = (cy - year) * 52 + (cw - week);

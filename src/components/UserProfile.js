@@ -89,13 +89,20 @@ const UserProfile = ({ userId, onBack }) => {
     return new Date(now.setDate(now.getDate() - days));
   };
 
-  const filteredData = weeklyEntries.filter(entry => {
+  const filteredData = weeklyEntries
+  .filter(entry => {
     const entryDate = entry.timestamp?.toDate?.();
     return entryDate && entryDate >= calculateDateFromRange(selectedRange);
-  }).map(entry => ({
+  })
+  .map(entry => ({
     name: entry.weekId,
     points: entry.totalPoints,
-  }));
+  }))
+  .sort((a, b) => {
+    const [ay, aw] = a.name.split('-W').map(Number);
+    const [by, bw] = b.name.split('-W').map(Number);
+    return ay !== by ? ay - by : aw - bw;
+  });
 
   return (
     <div className="dashboard-screen">
