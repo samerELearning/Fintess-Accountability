@@ -1,70 +1,99 @@
-# Getting Started with Create React App
+# Fitness Accountability Dashboard 🏋️‍♂️
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+**Stay accountable. Stay consistent. Push forward.**
 
-## Available Scripts
+This military-themed fitness web app helps users set weekly fitness goals (distance + reps), track their actual performance, and see how they and their team perform over time. If a user fails to meet their goal, their whole team feels it.
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## 🚀 Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- 🔐 **Anonymous Firebase Authentication**
+- 🧍 **User Dashboard**
+  - Set and submit weekly fitness goals
+  - Log actual progress
+  - View personal history and a performance curve
+- 🧠 **MIA Detection**
+  - Automatically flags missing weekly submissions
+- 👥 **Team View**
+  - See your teammates' progress
+  - View average team performance over time
+- 🌍 **Community Dashboard**
+  - Explore user stats from across the platform
+  - View global progress trends and team listings
+- ⚙️ **Admin Panel**
+  - Block/unblock and delete users
+  - Create, edit, and delete teams
+  - Access individual user and team profiles
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+---
 
-### `npm test`
+## 🛠️ Tech Stack
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- **Frontend:** React.js
+- **Styling:** Pure CSS (military HUD style)
+- **Backend:** Firebase (Firestore + Auth)
+- **Data Visualization:** Recharts
+- **Sound:** Intro screen typewriter sound effect
 
-### `npm run build`
+---
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 🖼️ Social Media Link Preview
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+To control how your link looks when shared, make sure these are in `public/index.html`:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```html
+<meta property="og:title" content="Fitness Accountability" />
+<meta property="og:description" content="Stay accountable with your fitness goals — track, log, and push yourself each week!" />
+<meta property="og:image" content="%PUBLIC_URL%/DUT.png" />
+<meta property="og:url" content="https://fitness-accountability.vercel.app/" />
+<meta name="twitter:card" content="summary_large_image" />
+```
 
-### `npm run eject`
+✅ Recommended image size for previews: `1200x630`
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+---
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🔧 Getting Started
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+### 1. Clone and Install
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+git clone https://github.com/your-username/fitness-accountability.git
+cd fitness-accountability
+npm install
+```
 
-## Learn More
+### 2. Add Firebase Configuration
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+Update your Firebase config inside `Dashboard.js` (or externalize it to a `.env` file).
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### 3. Start Development Server
 
-### Code Splitting
+```bash
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Then open [http://localhost:3000](http://localhost:3000).
 
-### Analyzing the Bundle Size
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## 📦 Build for Production
 
-### Making a Progressive Web App
+```bash
+npm run build
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+Then deploy the contents of the `/build` folder to your preferred host (e.g., Vercel, Firebase, Netlify).
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## 👤 Admin Access
 
-### Deployment
+To unlock admin-only tools, manually add your Firebase UID to the `admins` collection in Firestore.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+---
 
-### `npm run build` fails to minify
+## 📄 License
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+MIT License © 2025
