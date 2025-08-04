@@ -267,7 +267,7 @@ const Dashboard = ({ setView, setSelectedUserId }) => {
   });
 
   const { year: startYear, week: startWeek } = parseWeekId(sorted[0].weekId);
-  const { year: endYear, week: endWeek } = parseWeekId(sorted[sorted.length - 1].weekId);
+  const { year: endYear, week: endWeek } = parseWeekId(currentWeekId);
 
   const result = [];
   for (let y = startYear; y <= endYear; y++) {

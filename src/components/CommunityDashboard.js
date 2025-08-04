@@ -72,6 +72,29 @@ const CommunityPage = ({ setView, setSelectedUserId, setSelectedTeamId }) => {
 
 
     useEffect(() => {
+        const parseWeekId = (weekId) => {
+        const [year, week] = weekId.split('-W').map(Number);
+        return { year, week };
+        };
+
+        const getFullWeekRange = (start, end) => {
+        const weeks = [];
+        let current = { ...start };
+        while (
+            current.year < end.year ||
+            (current.year === end.year && current.week < end.week)
+        ) {
+            weeks.push(`${current.year}-W${String(current.week).padStart(2, '0')}`);
+            current.week++;
+            if (current.week > 52) {
+            current.week = 1;
+            current.year++;
+            }
+        }
+        return weeks;
+        };
+
+
         const fetchUsers = async () => {
             setLoadingUsers(true);
             const userDocs = await getDocs(collection(db, 'user_names'));
@@ -87,16 +110,29 @@ const CommunityPage = ({ setView, setSelectedUserId, setSelectedTeamId }) => {
             const currentWeekId = getWeekId(new Date());
             let miaCount = 0;
 
+            const weekIds = new Set();
             weeklySnapshot.forEach(doc => {
                 const data = doc.data();
+                weekIds.add(doc.id);
                 if (
-                data.goalDistance &&
-                (data.actualDistance == null || data.actualReps == null) &&
-                doc.id < currentWeekId
+                    data.goalDistance &&
+                    (data.actualDistance == null || data.actualReps == null) &&
+                    doc.id < currentWeekId
                 ) {
-                miaCount++;
+                    miaCount++;
                 }
             });
+
+            if (joinedAt) {
+                const start = parseWeekId(getWeekId(joinedAt.toDate()));
+                const end = parseWeekId(currentWeekId);
+                const fullWeeks = getFullWeekRange(start, end);
+                fullWeeks.forEach((weekId) => {
+                    if (!weekIds.has(weekId) && weekId < currentWeekId) {
+                    miaCount++;
+                    }
+                });
+            }
 
             usersData.push({ userId, name, joinedAt, miaCount, isBlocked });
             }

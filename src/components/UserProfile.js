@@ -63,7 +63,7 @@ const UserProfile = ({ userId, onBack }) => {
     const toComparable = ({ year, week }) => year * 100 + week;
     const sorted = [...entries].sort((a, b) => toComparable(parseWeekId(a.weekId)) - toComparable(parseWeekId(b.weekId)));
     const { year: startYear, week: startWeek } = parseWeekId(sorted[0].weekId);
-    const { year: endYear, week: endWeek } = parseWeekId(sorted[sorted.length - 1].weekId);
+    const { year: endYear, week: endWeek } = parseWeekId(currentWeekId);
 
     const result = [];
     for (let y = startYear; y <= endYear; y++) {
