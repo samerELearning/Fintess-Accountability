@@ -329,7 +329,7 @@ const CommunityPage = ({ setView, setSelectedUserId, setSelectedTeamId }) => {
                     <div className="left-shift-chart">
                         <ResponsiveContainer width="100%" height={300}>
                             <AreaChart data={filteredData}>
-                            <XAxis dataKey="weekId" />
+                            <XAxis dataKey="weekId" interval="preserveStartEnd" angle={-45} textAnchor="end"/>
                             <YAxis />
                             <Tooltip />
                             <Area

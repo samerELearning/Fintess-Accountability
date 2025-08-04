@@ -155,7 +155,7 @@ const TeamProfile = ({ teamId, onBack, setSelectedUserId }) => {
               if (selectedRange === '1y') return diff <= 52;
               return true;
             })}>
-              <XAxis dataKey="name" />
+              <XAxis dataKey="name" interval="preserveStartEnd" angle={-45} textAnchor="end"/>
               <YAxis />
               <Tooltip />
               <Area

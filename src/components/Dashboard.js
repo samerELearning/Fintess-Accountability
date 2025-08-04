@@ -476,7 +476,7 @@ const Dashboard = ({ setView, setSelectedUserId }) => {
       <div className="left-shift-chart">
         <ResponsiveContainer width="100%" height={300}>
           <AreaChart data={filteredData}>
-            <XAxis dataKey="name" />
+            <XAxis dataKey="name" interval="preserveStartEnd" angle={-45} textAnchor="end"/>
             <YAxis />
             <Tooltip />
             <Area
