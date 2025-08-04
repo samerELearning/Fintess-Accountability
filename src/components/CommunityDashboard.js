@@ -330,7 +330,14 @@ const CommunityPage = ({ setView, setSelectedUserId, setSelectedTeamId }) => {
                         <ResponsiveContainer width="100%" height={300}>
                             <AreaChart data={filteredData}>
                             <XAxis dataKey="weekId" interval="preserveStartEnd" angle={-45} textAnchor="end"/>
-                            <YAxis />
+                            <YAxis
+                                tickFormatter={(value) => {
+                                    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1) + 'M';
+                                    if (value >= 1_000) return (value / 1_000).toFixed(1) + 'K';
+                                    return value;
+                                }}
+                                domain={[0, 'auto']}
+                            />
                             <Tooltip />
                             <Area
                                 type="monotone"
