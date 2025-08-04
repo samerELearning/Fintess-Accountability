@@ -492,6 +492,9 @@ body, .dashboard-table-body {
   touch-action: pan-y; /* only vertical scrolling */
 }
 
+.header {
+  background-color: rgba(0, 255, 0, 0.15);
+}
 
 @keyframes blink {
   50% { opacity: 0; }

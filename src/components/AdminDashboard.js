@@ -218,7 +218,7 @@ const AdminDashboard = ({ setView, setSelectedUserId, setSelectedTeamId }) => {
         ) : (
         <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
             <div className="dashboard-table-wrapper">
-                <table className="dashboard-table">
+                <table className="dashboard-table header">
                     <thead>
                         <tr>
                         <th>Name</th>
@@ -379,7 +379,7 @@ const AdminDashboard = ({ setView, setSelectedUserId, setSelectedTeamId }) => {
 
         <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
             <div className="dashboard-table-wrapper">
-                <table className="dashboard-table">
+                <table className="dashboard-table header">
                 <thead>
                     <tr>
                     <th>Team Name</th>

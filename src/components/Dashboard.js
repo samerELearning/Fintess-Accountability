@@ -414,7 +414,7 @@ const Dashboard = ({ setView, setSelectedUserId }) => {
     <h2 className="dashboard-section-title">Your Weekly History</h2>
     <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
       <div className="dashboard-table-wrapper">
-        <table className="dashboard-table">
+        <table className="dashboard-table header">
           <thead>
             <tr>
               <th>Week</th>
@@ -498,7 +498,7 @@ const Dashboard = ({ setView, setSelectedUserId }) => {
 
     <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
       <div className="dashboard-table-wrapper">
-        <table className="dashboard-table team-table">
+        <table className="dashboard-table team-table header">
           <thead>
             <tr>
               <th>Fire Body</th>

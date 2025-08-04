@@ -107,7 +107,7 @@ const UserProfile = ({ userId, onBack }) => {
       <h2 className="dashboard-section-title">Weekly History</h2>
         <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
         <div className="dashboard-table-wrapper">
-            <table className="dashboard-table">
+            <table className="dashboard-table header">
             <thead>
                 <tr>
                 <th>Week</th>
