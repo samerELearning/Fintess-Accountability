@@ -663,6 +663,13 @@ input[type=number] {
     position: static;
   }
 
+  .recharts-y-axis .recharts-cartesian-axis-tick tspan {
+    font-size: 10px;
+  }
+  .recharts-y-axis .recharts-cartesian-axis-tick {
+    transform: translateX(-3px);
+  }
+
 }
 
 /* Desktop-safe fallbacks */
