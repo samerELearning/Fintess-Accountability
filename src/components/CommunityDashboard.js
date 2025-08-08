@@ -58,10 +58,11 @@ const CommunityPage = ({ setView, setSelectedUserId, setSelectedTeamId }) => {
                 points: count > 0 ? parseFloat((totalPoints / count).toFixed(1)) : 0,
             }))
             .sort((a, b) => {
-                const aNum = parseInt(a.weekId.split('-')[1]);
-                const bNum = parseInt(b.weekId.split('-')[1]);
-                return aNum - bNum;
+                const [ay, aw] = a.weekId.split('-W').map(Number);
+                const [by, bw] = b.weekId.split('-W').map(Number);
+                return ay !== by ? ay - by : aw - bw;
             });
+
 
             setGlobalProgress(progressArray);
         };
