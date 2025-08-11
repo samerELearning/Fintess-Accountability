@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
+import NeonTooltip from './NeonToolTip';
 import {
   getFirestore,
   doc,
@@ -485,7 +486,11 @@ const Dashboard = ({ setView, setSelectedUserId }) => {
               }}
               domain={[0, 'auto']}
             />
-            <Tooltip />
+            <Tooltip
+              content={<NeonTooltip labelKey="Week" valueKey="points" />}
+              wrapperStyle={{ outline: 'none' }}
+              cursor={{ stroke: '#00FF00', strokeOpacity: 0.2 }}
+            />
             <Area
               type="monotone"
               dataKey="points"

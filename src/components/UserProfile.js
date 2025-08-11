@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getFirestore, doc, getDoc, collection, getDocs, query, onSnapshot } from 'firebase/firestore';
 import { getWeekId } from './Dashboard';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import NeonTooltip from './NeonToolTip';
 
 const UserProfile = ({ userId, onBack }) => {
   const db = getFirestore();
@@ -182,7 +183,11 @@ const UserProfile = ({ userId, onBack }) => {
                 }}
                 domain={[0, 'auto']}
               />
-              <Tooltip />
+              <Tooltip
+                content={<NeonTooltip labelKey="Week" valueKey="points" />}
+                wrapperStyle={{ outline: 'none' }}
+                cursor={{ stroke: '#00FF00', strokeOpacity: 0.2 }}
+              />
               <Area
                 type="monotone"
                 dataKey="points"
