@@ -614,7 +614,7 @@ input[type=number] {
   .dashboard-title {
     font-size: 1.2rem;
     margin-top: 3rem; /* Push it below the buttons */
-    width: 70%;
+    width: 80%;
   }
 
   /* Form */
