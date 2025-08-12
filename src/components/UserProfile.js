@@ -3,6 +3,7 @@ import { getFirestore, doc, getDoc, collection, getDocs, query, onSnapshot } fro
 import { getWeekId } from './Dashboard';
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
 import NeonTooltip from './NeonToolTip';
+import HelpIcon from './HelpIcon';
 
 const UserProfile = ({ userId, onBack }) => {
   const db = getFirestore();
@@ -158,7 +159,9 @@ const UserProfile = ({ userId, onBack }) => {
 
 
       <div className="dashboard-graph-section">
-        <h2 className="dashboard-section-title">Progress Curve</h2>
+        <h2 className="dashboard-section-title">Progress Curve
+          <HelpIcon text="This graph shows your total weekly points (distance + reps) over time." />
+        </h2>
         <div className="graph-controls">
           {['30d', '90d', '1y', 'all'].map((range) => (
             <button

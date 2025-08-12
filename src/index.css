@@ -548,6 +548,47 @@ input[type=number] {
   color: #ccffcc;                 /* softer green for values */
 }
 
+.help-icon-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-left: 0.4rem;
+  cursor: pointer;
+}
+
+.help-icon {
+  display: inline-block;
+  background: black;
+  border: 2px solid #00ff00;
+  color: #00ff00;
+  font-size: 0.6rem;
+  font-weight: bold;
+  border-radius: 50%;
+  width: 0.6rem;
+  height: 0.6rem;
+  text-align: center;
+  line-height: 0.5rem;
+  box-shadow: 0 0 4px #00ff00, 0 0 8px #00ff00;
+}
+
+.help-tooltip {
+  position: absolute;
+  top: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.92);
+  border: 2px solid #00ff00;
+  color: #00ff00;
+  padding: 0.5rem 0.7rem;
+  font-size: 0.85rem;
+  line-height: 1.25;
+  border-radius: 8px;
+  white-space: normal;
+  width: 400px;
+  box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
+  z-index: 999;
+}
+
+
 @media (max-width: 768px) {
   .neon-tooltip {
     font-size: 0.8rem;

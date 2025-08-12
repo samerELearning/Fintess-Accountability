@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { initializeApp } from 'firebase/app';
 import { getAuth, signInAnonymously, onAuthStateChanged } from 'firebase/auth';
 import NeonTooltip from './NeonToolTip';
+import HelpIcon from './HelpIcon';
 import {
   getFirestore,
   doc,
@@ -332,7 +333,10 @@ const Dashboard = ({ setView, setSelectedUserId }) => {
         </div>
       )}
 
-      <h1 className="dashboard-title">WEEKLY FITNESS DASHBOARD</h1>
+      <h1 className="dashboard-title">WEEKLY FITNESS DASHBOARD
+        <HelpIcon text="Set your weekly goals here before tracking your progress. Once you submit your goals for the week, they can’t be changed.
+        Actual distance and reps should be submitted before the end of the week. Distance is in Km and reps include push-ups, pull-ups or squats" />
+      </h1>
       
       <form className="dashboard-form" onSubmit={(e) => {
             e.preventDefault();
@@ -413,7 +417,10 @@ const Dashboard = ({ setView, setSelectedUserId }) => {
   <p className="dashboard-message">Loading your data...</p>
 ) : !isFirstTimeUser ? (
   <>
-    <h2 className="dashboard-section-title">Your Weekly History</h2>
+    <h2 className="dashboard-section-title">Your Weekly History
+      <HelpIcon text="This table shows all your past weeks’ goals and results. 'MIA' means you didn’t submit results for that week.
+                      Positive results mean you beat your goal, negative means you fell short." />
+    </h2>
     <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
       <div className="dashboard-table-wrapper">
         <table className="dashboard-table header">
@@ -460,7 +467,10 @@ const Dashboard = ({ setView, setSelectedUserId }) => {
       </div>
     </div>
     <div className="dashboard-graph-section">
-      <h2 className="dashboard-section-title">Your Progress Curve</h2>
+      <h2 className="dashboard-section-title">Your Progress Curve
+        <HelpIcon text="This chart shows your performance over time. The points combine your distance and reps into a single score: 20 reps = 1 km.
+                        Use the range buttons to change the timeline." />
+      </h2>
       <div className="graph-controls">
         {['30d', '90d', '1y', 'all'].map((range) => (
           <button
@@ -507,7 +517,9 @@ const Dashboard = ({ setView, setSelectedUserId }) => {
 
   {team && teamStats.length > 0 && (
   <>
-    <h2 className="dashboard-section-title mt-10">Your Team {team?.name}</h2>
+    <h2 className="dashboard-section-title mt-10">Your Team {team?.name}
+      <HelpIcon text="See how your teammates are doing this week. Click on a teammate’s name to view their full profile and progress history." />
+    </h2>
 
     <div className="scroll-hidden fade-in-table" style={{ maxHeight: '300px', overflowY: 'scroll' }}>
       <div className="dashboard-table-wrapper">

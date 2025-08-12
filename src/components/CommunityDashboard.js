@@ -3,6 +3,7 @@ import { getFirestore, collection, getDocs, doc, getDoc } from 'firebase/firesto
 import { getWeekId } from './Dashboard';
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import NeonTooltip from './NeonToolTip';
+import HelpIcon from './HelpIcon';
 
 
 
@@ -351,7 +352,10 @@ const CommunityPage = ({ setView, setSelectedUserId, setSelectedTeamId }) => {
                 )}
 
                 <div className="dashboard-graph-section">
-                    <h2 className="dashboard-section-title">GLOBAL PROGRESS CURVE</h2>
+                    <h2 className="dashboard-section-title">GLOBAL PROGRESS CURVE
+                        <HelpIcon text="This chart shows the combined progress of all users in the community.
+                                        Each point is the total of everyone’s distance and reps for that week." />
+                    </h2>
                     <div className="graph-controls">
                         {['30d', '90d', '1y', 'all'].map((range) => (
                         <button
