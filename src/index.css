@@ -590,6 +590,14 @@ input[type=number] {
 
 
 @media (max-width: 768px) {
+  .tooltip-box {
+    max-width: 80vw; /* prevent it from being wider than screen */
+    left: 50%;
+    transform: translateX(-50%);
+    word-wrap: break-word;
+    white-space: normal;
+  }
+
   .neon-tooltip {
     font-size: 0.8rem;
     padding: 0.45rem 0.6rem;
