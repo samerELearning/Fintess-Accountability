@@ -731,8 +731,6 @@ input[type=number] {
   }
 
   .help-tooltip {
-    left: 50%;
-    transform: translateX(-50%);
     margin-left: 10px;
     margin-right: 10px;
     max-width: 90vw;
