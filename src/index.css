@@ -731,9 +731,10 @@ input[type=number] {
   }
 
   .help-tooltip {
-    margin-left: 10px;
-    margin-right: 10px;
-    max-width: 90vw;
+    max-width: calc(100vw - 20px); /* Always keep 10px space on each side */
+    word-wrap: break-word;         /* Wrap text instead of overflowing */
+    white-space: normal;           /* Allow multi-line */
+    
     font-size: 0.8rem;
     padding: 0.45rem 0.6rem;
     border-width: 1.5px;
