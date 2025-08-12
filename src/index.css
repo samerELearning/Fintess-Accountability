@@ -566,7 +566,7 @@ input[type=number] {
   width: 0.6rem;
   height: 0.6rem;
   text-align: center;
-  line-height: 0.5rem;
+  line-height: 0.6rem;
   box-shadow: 0 0 4px #00ff00, 0 0 8px #00ff00;
 }
 
@@ -574,7 +574,7 @@ input[type=number] {
   position: absolute;
   top: 125%;
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-95%);
   background: rgba(0, 0, 0, 0.92);
   border: 2px solid #00ff00;
   color: #00ff00;
@@ -612,7 +612,7 @@ input[type=number] {
   }
 
   .dashboard-title {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     margin-top: 3rem; /* Push it below the buttons */
   }
 
