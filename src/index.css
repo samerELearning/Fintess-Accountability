@@ -588,29 +588,6 @@ input[type=number] {
   z-index: 999;
 }
 
-
-@media (max-width: 768px) {
-  .help-tooltip {
-    left: 50%;
-    transform: translateX(-50%);
-    margin-left: 10px;
-    margin-right: 10px;
-    max-width: 90vw;
-    font-size: 0.8rem;
-    padding: 0.45rem 0.6rem;
-    border-width: 1.5px;
-    box-shadow: 0 0 6px #00ff00, 0 0 12px #00ff00;
-  }
-
-  .neon-tooltip {
-    font-size: 0.8rem;
-    padding: 0.45rem 0.6rem;
-    border-width: 1.5px;
-    box-shadow: 0 0 6px #00ff00, 0 0 12px #00ff00;
-  }
-}
-
-
 @media (max-width: 768px) {
   /* Top buttons */
   .community-button-container,
@@ -751,6 +728,25 @@ input[type=number] {
   }
   .recharts-y-axis .recharts-cartesian-axis-tick {
     transform: translateX(-3px);
+  }
+
+  .help-tooltip {
+    left: 50%;
+    transform: translateX(-50%);
+    margin-left: 10px;
+    margin-right: 10px;
+    max-width: 90vw;
+    font-size: 0.8rem;
+    padding: 0.45rem 0.6rem;
+    border-width: 1.5px;
+    box-shadow: 0 0 6px #00ff00, 0 0 12px #00ff00;
+  }
+
+  .neon-tooltip {
+    font-size: 0.8rem;
+    padding: 0.45rem 0.6rem;
+    border-width: 1.5px;
+    box-shadow: 0 0 6px #00ff00, 0 0 12px #00ff00;
   }
 
 }
