@@ -583,7 +583,7 @@ input[type=number] {
   line-height: 1.25;
   border-radius: 8px;
   white-space: normal;
-  width: 350px;
+  width: 300px;
   box-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00;
   z-index: 999;
 }
@@ -744,7 +744,7 @@ input[type=number] {
   .help-icon {
     display: inline-block;
     background: black;
-    border: 2px solid #00ff00;
+    border: 1px solid #00ff00;
     color: #00ff00;
     font-size: 0.4rem;
     font-weight: bold;
@@ -752,7 +752,7 @@ input[type=number] {
     width: 0.4rem;
     height: 0.4rem;
     text-align: center;
-    line-height: 0.6rem;
+    line-height: 0.4rem;
     box-shadow: 0 0 4px #00ff00, 0 0 8px #00ff00;
   }
   .neon-tooltip {
