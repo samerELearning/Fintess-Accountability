@@ -574,7 +574,7 @@ input[type=number] {
   position: absolute;
   top: 125%;
   left: 50%;
-  transform: translateX(-75%);
+  transform: translateX(-85%);
   background: rgba(0, 0, 0, 0.92);
   border: 2px solid #00ff00;
   color: #00ff00;
